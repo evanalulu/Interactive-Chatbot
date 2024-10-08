@@ -25,6 +25,8 @@ async function sendMessage(event) {
   // Clear the input field after sending the message
   inputField.value = "";
 
+  messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
   console.log("User:", userInput);
 
   try {
@@ -42,6 +44,9 @@ async function sendMessage(event) {
     
     botMessage.textContent = `Bot: ${data.botResponse}`; 
     messagesContainer.appendChild(botMessage);
+
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
 
   } catch (error) {
     console.error("Error:", error);
