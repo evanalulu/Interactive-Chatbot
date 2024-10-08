@@ -1,23 +1,36 @@
 const express = require('express');
 const path = require('path');
+const { OpenAI } = require('openai');
+const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+
+require('dotenv').config();
 
 const app = express();
 
-require('dotenv').config();
-const { OpenAI } = require('openai');
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+mongoose.connect(process.env.MONGO_URI)
+.then(() => console.log('MongoDB connected'))
+.catch(err => console.error('MongoDB connection error:',
+err));
+
+const Interaction = require('./models/Interaction'); // Import Interaction model
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve static files from the public folder
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Serve the index.html file on the root route
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+app.get('/chatbot', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'chatbot.html'));
 });
 
 // Handle POST requests to /submit
@@ -38,6 +51,14 @@ app.post('/submit', async (req, res) => {
     });
 
     const botResponse = response.choices[0].message.content.trim();
+
+    // Log the interaction to MongoDB after botResponse is generated
+    const interaction = new Interaction({
+      userInput: userMessage,
+      botResponse: botResponse,
+    });
+    await interaction.save(); // Save the interaction to MongoDB
+
     res.json({ botResponse });  // Send a JSON success response
     
   } catch (error) {
@@ -45,6 +66,22 @@ app.post('/submit', async (req, res) => {
     res.status(500).json({ error: 'Server Error' });  // Send JSON error response for server issues
   }
 
+});
+
+const EventLog = require('./models/EventLog'); // Import EventLog model
+
+app.post('/log-event', async (req, res) => {
+  const { eventType, elementName, timestamp } = req.body;
+
+  try {
+    // Log the event to MongoDB
+    const event = new EventLog({ eventType, elementName, timestamp
+    }); await event.save();
+    res.status(200).send('Event logged successfully');
+  } catch (error) {
+    console.error('Error logging event:', error.message);
+    res.status(500).send('Server Error');
+  }
 });
 
 app.use((req, res) => {
