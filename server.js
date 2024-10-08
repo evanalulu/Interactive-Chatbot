@@ -3,6 +3,12 @@ const path = require('path');
 
 const app = express();
 
+require('dotenv').config();
+const { OpenAI } = require('openai');
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -15,16 +21,30 @@ app.get('/', (req, res) => {
 });
 
 // Handle POST requests to /submit
-app.post('/submit', (req, res) => {
+app.post('/submit', async (req, res) => {
   const userMessage = req.body.message;
+
+  if (!userMessage) {
+    return res.status(400).json({ error: 'Invalid input' });
+  }
 
   console.log(`User message received: ${userMessage}`);
 
-  // Respond with JSON
-  res.json({
-    userMessage: userMessage,
-    response: 'Message Received!'
-  });
+  try {
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [{ role: 'user', content: userMessage }],
+      max_tokens: 500,
+    });
+
+    const botResponse = response.choices[0].message.content.trim();
+    res.json({ botResponse });  // Send a JSON success response
+    
+  } catch (error) {
+    console.error('Error with OpenAI API: ', error.message);
+    res.status(500).json({ error: 'Server Error' });  // Send JSON error response for server issues
+  }
+
 });
 
 app.use((req, res) => {
