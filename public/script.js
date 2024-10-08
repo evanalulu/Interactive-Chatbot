@@ -1,3 +1,25 @@
+// Log click events on the "Submit" button
+document.getElementById('submit').addEventListener('click', () => {
+  logEvent('click', 'Send Button');
+});
+
+// Log hover and focus events on the input field
+document.getElementById('chat-container').addEventListener('mouseover', () => {
+  logEvent('hover', 'User Input');
+});
+
+document.getElementById('chat-container').addEventListener('focus', () => {
+  logEvent('focus', 'User Input');
+});
+
+// Function to log events to the server
+function logEvent(type, element) {
+  fetch('/log-event', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ eventType: type, elementName: element, timestamp: new Date() })
+  });
+}  
 // Get references to input field, form, and messages container
 const inputField = document.getElementById("user-input");
 const chatForm = document.getElementById("chat-form");
@@ -16,11 +38,8 @@ async function sendMessage(event) {
     return;
   }
 
-  // Display the user's message in the chat window
-  const userMessage = document.createElement("div");
-  userMessage.classList.add("message", "user-message");
-  userMessage.textContent = `You: ${userInput}`;
-  messagesContainer.appendChild(userMessage);
+  //Display the user's message in the chat window
+  messagesContainer.innerHTML += `<div class="message user-message">You: ${userInput}</div>`;
 
   // Clear the input field after sending the message
   inputField.value = "";
@@ -39,14 +58,9 @@ async function sendMessage(event) {
     const data = await response.json();
 
     // Display the bot's response in the chat window
-    const botMessage = document.createElement("div");
-    botMessage.classList.add("message", "bot-message");
-    
-    botMessage.textContent = `Bot: ${data.botResponse}`; 
-    messagesContainer.appendChild(botMessage);
+    messagesContainer.innerHTML += `<div class="message bot-message">Bot: ${data.botResponse}</div>`;
 
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
-
 
   } catch (error) {
     console.error("Error:", error);
