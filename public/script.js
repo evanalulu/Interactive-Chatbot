@@ -31,7 +31,7 @@ async function sendMessage(event) {
     const response = await fetch('/submit', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: userInput })
+      body: JSON.stringify({ message: userInput })  // Send the message as JSON
     });
 
     const data = await response.json();
@@ -39,10 +39,10 @@ async function sendMessage(event) {
     // Display the bot's response in the chat window
     const botMessage = document.createElement("div");
     botMessage.classList.add("message", "bot-message");
-    botMessage.textContent = `Bot: ${data.response}`; 
+    
+    botMessage.textContent = `Bot: ${data.botResponse}`; 
     messagesContainer.appendChild(botMessage);
 
-    console.log(data);
   } catch (error) {
     console.error("Error:", error);
   }
