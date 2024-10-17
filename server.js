@@ -3,6 +3,7 @@ const path = require('path');
 const { OpenAI } = require('openai');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const axios = require('axios');
 
 require('dotenv').config();
 
@@ -35,38 +36,56 @@ app.get('/chatbot', (req, res) => {
 
 // Handle POST requests to /submit
 app.post('/submit', async (req, res) => {
-  const userMessage = req.body.message;
+  const { history = [], input: userInput } = req.body; // Only use userInput and history from the request body
 
-  if (!userMessage) {
+  if (!userInput) {
     return res.status(400).json({ error: 'Invalid input' });
   }
 
-  console.log(`User message received: ${userMessage}`);
-
   try {
-    const response = await openai.chat.completions.create({
+    // Construct the messages array based on whether conversation history exists or not
+    const messages = history.length === 0
+      ? [{ role: 'system', content: 'You are a helpful assistant.' }, { role: 'user', content: userInput }]
+      : [{ role: 'system', content: 'You are a helpful assistant.' }, ...history, { role: 'user', content: userInput }];
+
+    const openaiResponse = await openai.chat.completions.create({
       model: "gpt-4o-mini",
-      messages: [{ role: 'user', content: userMessage }],
+      messages: messages,
       max_tokens: 500,
     });
 
-    const botResponse = response.choices[0].message.content.trim();
+    const botResponse = openaiResponse.choices[0].message.content.trim();
+    // console.log('Bot response:', botResponse);
+
+    // Perform the Bing search
+    const bingResponse = await axios.get('https://api.bing.microsoft.com/v7.0/search', {
+      params: { q: userInput }, // Use the user's input as the search query
+      headers: {
+        'Ocp-Apim-Subscription-Key': process.env.BING_API_KEY
+      }
+    });
+
+    const searchResults = bingResponse.data.webPages.value.slice(0, 3).map(result => ({
+      title: result.name,
+      url: result.url,
+      snippet: result.snippet
+    }));
 
     // Log the interaction to MongoDB after botResponse is generated
     const interaction = new Interaction({
-      userInput: userMessage,
+      userInput: userInput,
       botResponse: botResponse,
     });
     await interaction.save(); // Save the interaction to MongoDB
 
-    res.json({ botResponse });  // Send a JSON success response
-    
+    res.json({ botResponse, searchResults });  // Send a JSON success response
+
   } catch (error) {
-    console.error('Error with OpenAI API: ', error.message);
+    console.error('Error with OpenAI or Bing API:', error.message);
     res.status(500).json({ error: 'Server Error' });  // Send JSON error response for server issues
   }
-
 });
+
 
 const EventLog = require('./models/EventLog'); // Import EventLog model
 
