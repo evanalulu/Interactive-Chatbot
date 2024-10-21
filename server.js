@@ -36,7 +36,11 @@ app.get('/chatbot', (req, res) => {
 
 // Handle POST requests to /submit
 app.post('/submit', async (req, res) => {
-  const { history = [], input: userInput } = req.body; // Only use userInput and history from the request body
+  const { history = [], input: userInput, participantID } = req.body; // Only use userInput and history from the request body
+
+  if (!participantID) {
+    return res.status(400).send('Participant ID is required');
+    }
 
   if (!userInput) {
     return res.status(400).json({ error: 'Invalid input' });
@@ -72,10 +76,7 @@ app.post('/submit', async (req, res) => {
     }));
 
     // Log the interaction to MongoDB after botResponse is generated
-    const interaction = new Interaction({
-      userInput: userInput,
-      botResponse: botResponse,
-    });
+    const interaction = new Interaction({ userInput, botResponse, participantID });
     await interaction.save(); // Save the interaction to MongoDB
 
     res.json({ botResponse, searchResults });  // Send a JSON success response
@@ -90,12 +91,16 @@ app.post('/submit', async (req, res) => {
 const EventLog = require('./models/EventLog'); // Import EventLog model
 
 app.post('/log-event', async (req, res) => {
-  const { eventType, elementName, timestamp } = req.body;
+  const { eventType, elementName, timestamp, participantID } = req.body;
+
+  if (!participantID) {
+    return res.status(400).send('Participant ID is required');
+  }
 
   try {
     // Log the event to MongoDB
-    const event = new EventLog({ eventType, elementName, timestamp
-    }); await event.save();
+    const event = new EventLog({ eventType, elementName, timestamp, participantID}); 
+    await event.save();
     res.status(200).send('Event logged successfully');
   } catch (error) {
     console.error('Error logging event:', error.message);
@@ -106,6 +111,26 @@ app.post('/log-event', async (req, res) => {
 app.use((req, res) => {
   res.status(404).send('404 Not Found');
 });
+
+// Define a POST route for retrieving chat history by participantID
+// POST route to fetch conversation history by participantID
+app.post('/history', async (req, res) => {
+  const { participantID } = req.body; // Get participant ID
+  if (!participantID) {
+  return res.status(400).send('Participant ID is required');
+  }
+  try {
+  // Fetch all interactions from the database for the given participantID
+  const interactions = await Interaction.find({ participantID }).sort({
+  timestamp: 1 });
+  // Send the conversation history back to the client
+  res.json({ interactions });
+  } catch (error) {
+  console.error('Error fetching conversation history:', error.message);
+  res.status(500).send('Server Error');
+  }
+  });
+  
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
