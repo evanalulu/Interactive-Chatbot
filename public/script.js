@@ -91,19 +91,23 @@ async function sendMessage(event) {
     messagesContainer.appendChild(botMessageDiv);
 
     // Create and display Bing search results if available
+    // Create and display Bing search results if available
     if (data.searchResults && data.searchResults.length > 0) {
-      const searchResultsDiv = document.createElement('div');
-      searchResultsDiv.classList.add('message', 'bot-message'); // Consistent class for styling
-      searchResultsDiv.textContent = 'Bing Search Results:';
+      // Clear previous search results
+      const searchSection = document.getElementById('search-section');
+      searchSection.innerHTML = ''; // Clear any previous results
+      
+      const searchResultsHeader = document.createElement('h3');
+      searchResultsHeader.textContent = 'Bing Search Results:';
+      searchSection.appendChild(searchResultsHeader);
 
+      // Display the search results
       data.searchResults.forEach(result => {
         const resultDiv = document.createElement('div');
         resultDiv.classList.add('search-result');
         resultDiv.innerHTML = `<a href="${result.url}" target="_blank">${result.title}</a><p>${result.snippet}</p>`;
-        searchResultsDiv.appendChild(resultDiv);
+        searchSection.appendChild(resultDiv);
       });
-
-      messagesContainer.appendChild(searchResultsDiv);
     }
 
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
