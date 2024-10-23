@@ -23,6 +23,8 @@ function logEvent(type, element) {
 
 // Retrieve participantID from localStorage
 const participantID = localStorage.getItem('participantID');
+console.log(participantID);
+
 // Alert and prompt if no participantID
 if (!participantID) {
   alert('Please enter a participant ID.');
@@ -51,8 +53,11 @@ async function sendMessage(event) {
     return;
   }
 
-  //Display the user's message in the chat window
-  messagesContainer.innerHTML += `<div class="message user-message">You: ${userInput}</div>`;
+  // Create and display the user's message div
+  const userMessageDiv = document.createElement('div');
+  userMessageDiv.classList.add('message', 'user-message');
+  userMessageDiv.textContent = `You: ${userInput}`;
+  messagesContainer.appendChild(userMessageDiv);
 
   // Clear the input field after sending the message
   inputField.value = "";
@@ -64,8 +69,8 @@ async function sendMessage(event) {
   try {
     // ternary operator to check for conversation history
     const payload = conversationHistory.length === 0
-    ? { input: userInput, participantID } // First submission, send only input
-    : { history: conversationHistory, input: userInput, participantID };
+      ? { input: userInput, participantID } // First submission, send only input
+      : { history: conversationHistory, input: userInput, participantID };
     
     const response = await fetch('/submit', {
       method: 'POST',
@@ -75,23 +80,30 @@ async function sendMessage(event) {
 
     const data = await response.json();
 
-    // add user input and bot response to the conversation history
+    // Add user input and bot response to the conversation history
     conversationHistory.push({ role: 'user', content: userInput });
-    conversationHistory.push({ role: 'assistant', content: data.botResponse});
+    conversationHistory.push({ role: 'assistant', content: data.botResponse });
 
-    // Display the bot's response in the chat window
-    messagesContainer.innerHTML += `<div class="message bot-message">Bot: ${data.botResponse}</div>`;
+    // Create and display the bot's message div
+    const botMessageDiv = document.createElement('div');
+    botMessageDiv.classList.add('message', 'bot-message');
+    botMessageDiv.textContent = `Bot: ${data.botResponse}`;
+    messagesContainer.appendChild(botMessageDiv);
 
-    messagesContainer.innerHTML += `<div class="message bot-message">Bing Search:</div>`;
+    // Create and display Bing search results if available
     if (data.searchResults && data.searchResults.length > 0) {
       const searchResultsDiv = document.createElement('div');
+      searchResultsDiv.classList.add('message', 'bot-message'); // Consistent class for styling
+      searchResultsDiv.textContent = 'Bing Search Results:';
+
       data.searchResults.forEach(result => {
         const resultDiv = document.createElement('div');
-        resultDiv.innerHTML = `<a href="${result.url}"
-        target="_blank">${result.title}</a><p>${result.snippet}</p>`;
+        resultDiv.classList.add('search-result');
+        resultDiv.innerHTML = `<a href="${result.url}" target="_blank">${result.title}</a><p>${result.snippet}</p>`;
         searchResultsDiv.appendChild(resultDiv);
       });
-      document.getElementById('messages').appendChild(searchResultsDiv);
+
+      messagesContainer.appendChild(searchResultsDiv);
     }
 
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
@@ -111,18 +123,27 @@ async function loadConversationHistory() {
   const data = await response.json();
   if (data.interactions && data.interactions.length > 0) {
     data.interactions.forEach(interaction => {
+      // Create and display the user's message div from history
       const userMessageDiv = document.createElement('div');
+      userMessageDiv.classList.add('message', 'user-message');
       userMessageDiv.textContent = `You: ${interaction.userInput}`;
-      document.getElementById('messages').appendChild(userMessageDiv);
+      messagesContainer.appendChild(userMessageDiv);
+
+      // Create and display the bot's message div from history
       const botMessageDiv = document.createElement('div');
+      botMessageDiv.classList.add('message', 'bot-message');
       botMessageDiv.textContent = `Bot: ${interaction.botResponse}`;
-      document.getElementById('messages').appendChild(botMessageDiv);
+      messagesContainer.appendChild(botMessageDiv);
+
       // Add to conversation history
       conversationHistory.push({ role: 'user', content: interaction.userInput });
       conversationHistory.push({ role: 'assistant', content: interaction.botResponse });
     });
+
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
   }
 }
+
 // Load history when agent loads
 window.onload = loadConversationHistory;
   

@@ -59,7 +59,6 @@ app.post('/submit', async (req, res) => {
     });
 
     const botResponse = openaiResponse.choices[0].message.content.trim();
-    // console.log('Bot response:', botResponse);
 
     // Perform the Bing search
     const bingResponse = await axios.get('https://api.bing.microsoft.com/v7.0/search', {
@@ -108,29 +107,31 @@ app.post('/log-event', async (req, res) => {
   }
 });
 
-app.use((req, res) => {
-  res.status(404).send('404 Not Found');
-});
-
 // Define a POST route for retrieving chat history by participantID
 // POST route to fetch conversation history by participantID
 app.post('/history', async (req, res) => {
   const { participantID } = req.body; // Get participant ID
+
   if (!participantID) {
-  return res.status(400).send('Participant ID is required');
+    return res.status(400).send('Participant ID is required');
   }
+
   try {
-  // Fetch all interactions from the database for the given participantID
-  const interactions = await Interaction.find({ participantID }).sort({
-  timestamp: 1 });
-  // Send the conversation history back to the client
-  res.json({ interactions });
+    // Fetch all interactions from the database for the given participantID
+    const interactions = await Interaction.find({ participantID }).sort({
+    timestamp: 1 });
+    
+    // Send the conversation history back to the client
+    res.json({ interactions });
   } catch (error) {
-  console.error('Error fetching conversation history:', error.message);
-  res.status(500).send('Server Error');
+    console.error('Error fetching conversation history:', error.message);
+    res.status(500).send('Server Error');
   }
-  });
-  
+});
+
+app.use((req, res) => {
+  res.status(404).send('404 Not Found');
+});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
