@@ -1,37 +1,53 @@
 // Log click events on the "Submit" button
-document.getElementById('submit').addEventListener('click', () => {
+document.getElementById("submit").addEventListener("click", () => {
   // logEvent('click', 'Send Button');
 });
 
 // Log hover and focus events on the input field
-document.getElementById('chat-container').addEventListener('mouseover', () => {
+document.getElementById("chat-container").addEventListener("mouseover", () => {
   // logEvent('hover', 'User Input');
 });
 
-document.getElementById('chat-container').addEventListener('focus', () => {
+document.getElementById("chat-container").addEventListener("focus", () => {
   // logEvent('focus', 'User Input');
 });
 
 // Function to log events to the server
 function logEvent(type, element) {
-  fetch('/log-event', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ eventType: type, elementName: element, timestamp: new Date() })
+  fetch("/log-event", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ eventType: type, elementName: element, timestamp: new Date() }),
   });
 }
 
+function submitSettings() {
+  const topics = Array.from(document.querySelectorAll('input[name="topic"]:checked')).map((input) => input.value);
+
+  const questionTypes = Array.from(document.querySelectorAll('input[name="question-type"]:checked')).map(
+    (input) => input.value
+  );
+
+  const difficulty = document.getElementById("difficulty").value;
+
+  const data = {
+    topics: topics,
+    questionTypes: questionTypes,
+    difficulty: difficulty,
+  };
+  console.log(data);
+}
+
 // Retrieve participantID from localStorage
-const participantID = localStorage.getItem('participantID');
+const participantID = localStorage.getItem("participantID");
 console.log(participantID);
 
 // Alert and prompt if no participantID
 if (!participantID) {
-  alert('Please enter a participant ID.');
+  alert("Please enter a participant ID.");
   // Redirect to login if no participantID is set
-  window.location.href = '/';
+  window.location.href = "/";
 }
-
 
 // Get references to input field, form, and messages container
 const inputField = document.getElementById("user-input");
@@ -45,7 +61,7 @@ let conversationHistory = [];
 
 async function sendMessage(event) {
   event.preventDefault();
-  
+
   const userInput = inputField.value.trim();
 
   if (userInput === "") {
@@ -54,8 +70,8 @@ async function sendMessage(event) {
   }
 
   // Create and display the user's message div
-  const userMessageDiv = document.createElement('div');
-  userMessageDiv.classList.add('message', 'user-message');
+  const userMessageDiv = document.createElement("div");
+  userMessageDiv.classList.add("message", "user-message");
   userMessageDiv.textContent = `You: ${userInput}`;
   messagesContainer.appendChild(userMessageDiv);
 
@@ -68,25 +84,26 @@ async function sendMessage(event) {
 
   try {
     // ternary operator to check for conversation history
-    const payload = conversationHistory.length === 0
-      ? { input: userInput, participantID } // First submission, send only input
-      : { history: conversationHistory, input: userInput, participantID };
-    
-    const response = await fetch('/submit', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
+    const payload =
+      conversationHistory.length === 0
+        ? { input: userInput, participantID } // First submission, send only input
+        : { history: conversationHistory, input: userInput, participantID };
+
+    const response = await fetch("/submit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
     });
 
     const data = await response.json();
 
     // Add user input and bot response to the conversation history
-    conversationHistory.push({ role: 'user', content: userInput });
-    conversationHistory.push({ role: 'assistant', content: data.botResponse });
+    conversationHistory.push({ role: "user", content: userInput });
+    conversationHistory.push({ role: "assistant", content: data.botResponse });
 
     // Create and display the bot's message div
-    const botMessageDiv = document.createElement('div');
-    botMessageDiv.classList.add('message', 'bot-message');
+    const botMessageDiv = document.createElement("div");
+    botMessageDiv.classList.add("message", "bot-message");
     botMessageDiv.textContent = `Bot: ${data.botResponse}`;
     messagesContainer.appendChild(botMessageDiv);
 
@@ -94,17 +111,17 @@ async function sendMessage(event) {
     // Create and display Bing search results if available
     if (data.searchResults && data.searchResults.length > 0) {
       // Clear previous search results
-      const searchSection = document.getElementById('search-section');
-      searchSection.innerHTML = ''; // Clear any previous results
-      
-      const searchResultsHeader = document.createElement('h3');
-      searchResultsHeader.textContent = 'Bing Search Results:';
+      const searchSection = document.getElementById("search-section");
+      searchSection.innerHTML = ""; // Clear any previous results
+
+      const searchResultsHeader = document.createElement("h3");
+      searchResultsHeader.textContent = "Bing Search Results:";
       searchSection.appendChild(searchResultsHeader);
 
       // Display the search results
-      data.searchResults.forEach(result => {
-        const resultDiv = document.createElement('div');
-        resultDiv.classList.add('search-result');
+      data.searchResults.forEach((result) => {
+        const resultDiv = document.createElement("div");
+        resultDiv.classList.add("search-result");
         resultDiv.innerHTML = `<a href="${result.url}" target="_blank">${result.title}</a><p>${result.snippet}</p>`;
         searchSection.appendChild(resultDiv);
       });
@@ -118,30 +135,30 @@ async function sendMessage(event) {
 
 // Function to fetch and load existing conversation history
 async function loadConversationHistory() {
-  const response = await fetch('/history', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ participantID }) // Send participantID to the server
+  const response = await fetch("/history", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ participantID }), // Send participantID to the server
   });
 
   const data = await response.json();
   if (data.interactions && data.interactions.length > 0) {
-    data.interactions.forEach(interaction => {
+    data.interactions.forEach((interaction) => {
       // Create and display the user's message div from history
-      const userMessageDiv = document.createElement('div');
-      userMessageDiv.classList.add('message', 'user-message');
+      const userMessageDiv = document.createElement("div");
+      userMessageDiv.classList.add("message", "user-message");
       userMessageDiv.textContent = `You: ${interaction.userInput}`;
       messagesContainer.appendChild(userMessageDiv);
 
       // Create and display the bot's message div from history
-      const botMessageDiv = document.createElement('div');
-      botMessageDiv.classList.add('message', 'bot-message');
+      const botMessageDiv = document.createElement("div");
+      botMessageDiv.classList.add("message", "bot-message");
       botMessageDiv.textContent = `Bot: ${interaction.botResponse}`;
       messagesContainer.appendChild(botMessageDiv);
 
       // Add to conversation history
-      conversationHistory.push({ role: 'user', content: interaction.userInput });
-      conversationHistory.push({ role: 'assistant', content: interaction.botResponse });
+      conversationHistory.push({ role: "user", content: interaction.userInput });
+      conversationHistory.push({ role: "assistant", content: interaction.botResponse });
     });
 
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
@@ -150,4 +167,3 @@ async function loadConversationHistory() {
 
 // Load history when agent loads
 window.onload = loadConversationHistory;
-  

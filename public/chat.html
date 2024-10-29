@@ -1,48 +1,86 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Chatbot</title>
-        <link href="chat.css" rel="stylesheet" type="text/css" />
-    </head>
-    <body>
-        <main>
-            <div id="left-container">
-              <div id="chat-container" class="section">
-                <h2>AI ChatBot</h2>
-                <div id="messages"></div>
-                <form id="chat-form">
-                  <input type="text" id="user-input" placeholder="Type your message..." />
-                  <button type="submit" id="submit">Send</button>
-                </form>
-              </div>
-          
-              <div id="search-section" class="section">
-                <h2>Search Results</h2>
-                <!-- Bing search results will go here -->
-              </div>
-            </div>
-          
-            <div id="right-section" class="section">
-              <h2>Advanced AI Agent</h2>
-              <!-- Advanced AI Agent content -->
-            </div>
-          </main>
-          
-          
-        <!-- <main>
-            <div class="chat-container" id="chat-container">
-                <h2>AI Chatbot</h2>
-                <div id="messages"></div>
-                
-                <form id="chat-form">
-                <input type="text" id="user-input" placeholder="Type your message..." />
-                <button type="submit" id="submit">Send</button>
-                </form>
-            </div> 
-        </main> -->
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chatbot</title>
+    <link href="chat.css" rel="stylesheet" type="text/css" />
+  </head>
+  <body>
+    <main>
+      <div id="left-container">
+        <div id="chat-container" class="section">
+          <h2>AI ChatBot</h2>
+          <div id="messages"></div>
+          <form id="chat-form">
+            <input type="text" id="user-input" placeholder="Type your message..." />
+            <button type="submit" id="submit">Send</button>
+          </form>
+        </div>
 
-        <script src="script.js"></script>
-    </body>
+        <div id="search-section" class="section">
+          <h2>Search Results</h2>
+          <!-- Bing search results will go here -->
+        </div>
+      </div>
+
+      <div id="right-section" class="section">
+        <h2>Quiz Yourself with AI</h2>
+        <!-- Dropdown to select coursework -->
+        <div id="coursework-container">
+          <h3>
+            <label for="coursework">Select coursework:</label>
+            <select id="coursework">
+              <option value="ibdp-spanish-ab-initio">IBDP Spanish Ab Initio</option>
+            </select>
+          </h3>
+        </div>
+
+        <div id="quiz-container">
+          <!-- Flashcard question area -->
+          <div id="question-area">
+            <p>¿Qué significa la palabra "hermanastro"?</p>
+            <div id="answers">
+              <div>A) Hermano por parte de padre y madre</div>
+              <div>B) Hijo de uno de tus padres, pero no de ambos</div>
+              <div>C) Primo que vive en tu casa</div>
+              <div>D) Tío por parte de madre</div>
+            </div>
+            <div id="answer-buttons">
+              <button>A</button>
+              <button>B</button>
+              <button>C</button>
+              <button>D</button>
+            </div>
+          </div>
+
+          <!-- Topics and settings area -->
+          <div id="settings-area">
+            <h3>Topics</h3>
+            <label><input type="checkbox" name="topic" value="Vocabulary" checked /> Vocabulary</label>
+            <label><input type="checkbox" name="topic" value="Tenses" /> Tenses</label>
+            <label><input type="checkbox" name="topic" value="Writing Practice" /> Writing Practice</label>
+
+            <h3>Question Type</h3>
+            <label
+              ><input type="checkbox" name="question-type" value="Multiple Choice" checked /> Multiple Choice</label
+            >
+            <label><input type="checkbox" name="question-type" value="Fill in the Blank" /> Fill in the Blank</label>
+            <label><input type="checkbox" name="question-type" value="Single Word" /> Single Word</label>
+
+            <h3>Difficulty</h3>
+            <select id="difficulty">
+              <option value="easy">Easy</option>
+              <option value="medium">Medium</option>
+              <option value="hard">Hard</option>
+            </select>
+
+            <button id="submit-settings" onclick="submitSettings()">Submit</button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
 </html>
