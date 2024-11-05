@@ -4,6 +4,7 @@ const { OpenAI } = require("openai");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const axios = require("axios");
+const marked = require("marked");
 
 require("dotenv").config();
 
@@ -51,11 +52,19 @@ app.post("/submit", async (req, res) => {
     const messages =
       history.length === 0
         ? [
-            { role: "system", content: "You are a helpful assistant." },
+            {
+              role: "system",
+              content:
+                "You are a supportive and knowledgeable language tutor, specializing in helping high school and undergraduate students prepare for their Spanish exams. Focus on explaining vocabulary, grammar, conjugations, sentence structure, and exam strategies in a simple and clear way. Offer interactive conversation practice if the student wants to try speaking, and provide helpful examples for difficult concepts. Adapt your responses to the student's level and try to make learning engaging and stress-free.",
+            },
             { role: "user", content: userInput },
           ]
         : [
-            { role: "system", content: "You are a helpful assistant." },
+            {
+              role: "system",
+              content:
+                "You are a supportive and knowledgeable language tutor, specializing in helping high school and undergraduate students prepare for their Spanish exams. Focus on explaining vocabulary, grammar, conjugations, sentence structure, and exam strategies in a simple and clear way. Offer interactive conversation practice if the student wants to try speaking, and provide helpful examples for difficult concepts. Adapt your responses to the student's level and try to make learning engaging and stress-free.",
+            },
             ...history,
             { role: "user", content: userInput },
           ];
@@ -66,7 +75,9 @@ app.post("/submit", async (req, res) => {
       max_tokens: 500,
     });
 
-    const botResponse = openaiResponse.choices[0].message.content.trim();
+    const botResponse = marked.parse(openaiResponse.choices[0].message.content.trim());
+    console.log(openaiResponse.choices[0].message.content.trim());
+    console.log(botResponse);
 
     // Perform the Bing search
     const bingResponse = await axios.get("https://api.bing.microsoft.com/v7.0/search", {
@@ -108,7 +119,8 @@ app.post("/generate-question", async (req, res) => {
     const prompt = `
       I’m practicing for the [Exam Type: IBDP Spanish Ab Initio]. 
       Provide a [Question Type: ${questionTypes.join(", ")}] question related to [Topics: ${topics.join(", ")}]. 
-      Include 4 answer choices labeled A, B, C, D. Only one answer should be correct. 
+      Include 4 answer choices labeled A, B, C, D. Only one answer should be correct. Difficulty level: [${difficulty}].
+
 
       Whatever type of question you get, make sure to follow this format (example format) and make sure the correct answer is under "---":
       ¿Cuál es la forma correcta del verbo "comer" en la primera persona del singular del pretérito perfecto?
@@ -122,8 +134,6 @@ app.post("/generate-question", async (req, res) => {
 
       ---
       Brief Explanation: "Comí" is the correct form in the simple past tense for the first person singular in Spanish. This tense is used for actions completed in the past, whereas the other options correspond to different tenses or moods.
-
-      Difficulty level: [${difficulty}].
     `.trim();
 
     console.log("Generated prompt:", prompt);
