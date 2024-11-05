@@ -39,19 +39,13 @@
         <div id="quiz-container">
           <!-- Flashcard question area -->
           <div id="question-area">
-            <p>¿Qué significa la palabra "hermanastro"?</p>
-            <div id="answers">
-              <div>A) Hermano por parte de padre y madre</div>
-              <div>B) Hijo de uno de tus padres, pero no de ambos</div>
-              <div>C) Primo que vive en tu casa</div>
-              <div>D) Tío por parte de madre</div>
+            <p></p>
+            <div id="answers"></div>
+            <div id="feedback" style="display: none">
+              <span id="feedback-text"></span>
+              <span id="feedback-explanation"></span>
             </div>
-            <div id="answer-buttons">
-              <button>A</button>
-              <button>B</button>
-              <button>C</button>
-              <button>D</button>
-            </div>
+            <button id="next-question-button" style="display: none" onclick="loadNextQuestion()">Next Question</button>
           </div>
 
           <!-- Topics and settings area -->
