@@ -129,6 +129,25 @@ h3 {
   font-family: Arial, sans-serif;
 }
 
+#start-quiz-button {
+  background-color: #ffffff;
+  border: 2px solid #333;
+  border-radius: 8px;
+  padding: 12px 20px;
+  font-size: 1.1em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 100px;
+  text-align: center;
+}
+
+#start-quiz-button:hover {
+  background-color: #e76f51; /* Darker orange on hover */
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.2);
+}
+
 #question-area p {
   font-size: 1.2em;
   font-weight: bold;
