@@ -109,7 +109,20 @@ app.post("/generate-question", async (req, res) => {
       I’m practicing for the [Exam Type: IBDP Spanish Ab Initio]. 
       Provide a [Question Type: ${questionTypes.join(", ")}] question related to [Topics: ${topics.join(", ")}]. 
       Include 4 answer choices labeled A, B, C, D. Only one answer should be correct. 
-      Mark the correct answer with an explanation, but display only the question and choices to the user initially. 
+
+      Whatever type of question you get, make sure to follow this format (example format) and make sure the correct answer is under "---":
+      ¿Cuál es la forma correcta del verbo "comer" en la primera persona del singular del pretérito perfecto?
+      A) Comí
+      B) Comera
+      C) He comido
+      D) Coma
+
+      ---
+      Correct Answer: A
+
+      ---
+      Brief Explanation: "Comí" is the correct form in the simple past tense for the first person singular in Spanish. This tense is used for actions completed in the past, whereas the other options correspond to different tenses or moods.
+
       Difficulty level: [${difficulty}].
     `.trim();
 
