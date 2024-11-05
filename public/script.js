@@ -23,20 +23,77 @@ function logEvent(type, element) {
 
 function submitSettings() {
   const topics = Array.from(document.querySelectorAll('input[name="topic"]:checked')).map((input) => input.value);
-
   const questionTypes = Array.from(document.querySelectorAll('input[name="question-type"]:checked')).map(
     (input) => input.value
   );
-
   const difficulty = document.getElementById("difficulty").value;
 
+  const participantID = "exampleParticipantID"; // Replace this with the actual participant ID
+  const history = []; // Replace with actual history if you're maintaining it
+
   const data = {
+    participantID: participantID,
     topics: topics,
     questionTypes: questionTypes,
     difficulty: difficulty,
+    history: history,
   };
-  console.log(data);
+
+  console.log("Data to send:", data); // Log the data object for verification
+
+  fetch("/generate-question", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      displayQuestion(data.question);
+      console.log("Generated Question:", data.question);
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
 }
+
+function displayQuestion(questionText) {
+  // Example input format:
+  // **Question:** ¿Cuál es la forma correcta del verbo "comer" en la primera persona del singular del pretérito perfecto?
+  // A) Comí
+  // B) Comera
+  // C) He comido
+  // D) Coma
+
+  const questionLines = questionText.split("\n");
+  const question = questionLines[0].replace("**Question:** ", "").trim();
+  const choices = questionLines.slice(1).filter((line) => line);
+
+  document.querySelector("#question-area p").textContent = question;
+
+  const answersDiv = document.getElementById("answers");
+  answersDiv.innerHTML = "";
+
+  choices.forEach((choice) => {
+    const choiceText = choice.trim();
+    const choiceDiv = document.createElement("div");
+    choiceDiv.textContent = choiceText;
+    answersDiv.appendChild(choiceDiv);
+  });
+
+  // Set up answer buttons
+  const answerButtons = document.querySelectorAll("#answer-buttons button");
+  answerButtons.forEach((button, index) => {
+    button.onclick = () => checkAnswer(choices[index]); // Associate each button with the choice
+  });
+}
+
+// function checkAnswer(selectedChoice) {
+//   // Here, you could add logic to verify the answer and give feedback
+//   console.log("Selected choice:", selectedChoice);
+//   // Implement any feedback mechanism here
+// }
 
 // Retrieve participantID from localStorage
 const participantID = localStorage.getItem("participantID");

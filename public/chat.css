@@ -13,6 +13,11 @@ main {
   box-sizing: border-box;
 }
 
+#left-container, #right-section {
+  display: inline-block;
+  vertical-align: top;
+}
+
 #left-container {
   width: 25%; /* 25% of the screen */
   display: flex;
@@ -83,10 +88,72 @@ main {
 h2 {
   margin-bottom: 10px;
 }
+h3 {
+  margin-bottom: 10px;
+}
 
 .section {
   background-color: #f9f9f9;
   padding: 20px;
   border-radius: 10px;
   border: 1px solid #ccc;
+}
+
+#right-section {
+  width: 70%; /* Right section takes the remaining 70% */
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  /* display: flex; */
+  /* flex-direction: row; */
+  justify-content: space-between;
+}
+
+/* Quiz container setup */
+#quiz-container {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+/* Flashcard question area */
+#question-area {
+  background-color: #f4a460;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: left;
+  flex: 2;
+}
+
+#answers {
+  margin: 10px 0;
+}
+
+#answer-buttons {
+  margin-top: 15px;
+}
+
+#answer-buttons button {
+  margin: 5px;
+}
+
+/* Settings area (Topics and other settings) */
+#settings-area {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  flex: 1;
+  margin-left: 20px;
+}
+
+#settings-area label {
+  display: block;
+  margin-bottom: 10px;
+}
+
+/* Extra margin to separate chat and search sections */
+#search-section {
+  margin-top: 20px;
 }
