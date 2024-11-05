@@ -12,6 +12,17 @@ document.getElementById("chat-container").addEventListener("focus", () => {
   // logEvent('focus', 'User Input');
 });
 
+// Retrieve participantID from localStorage
+const participantID = localStorage.getItem("participantID");
+console.log(participantID);
+
+// Alert and prompt if no participantID
+if (!participantID) {
+  alert("Please enter a participant ID.");
+  // Redirect to login if no participantID is set
+  window.location.href = "/";
+}
+
 // Function to log events to the server
 function logEvent(type, element) {
   fetch("/log-event", {
@@ -28,7 +39,7 @@ function submitSettings() {
   );
   const difficulty = document.getElementById("difficulty").value;
 
-  const participantID = "exampleParticipantID"; // Replace this with the actual participant ID
+  const participantID = participantID; // Replace this with the actual participant ID
   const history = []; // Replace with actual history if you're maintaining it
 
   const data = {
@@ -113,17 +124,6 @@ function loadNextQuestion() {
 
   // Trigger next question generation
   submitSettings();
-}
-
-// Retrieve participantID from localStorage
-const participantID = localStorage.getItem("participantID");
-console.log(participantID);
-
-// Alert and prompt if no participantID
-if (!participantID) {
-  alert("Please enter a participant ID.");
-  // Redirect to login if no participantID is set
-  window.location.href = "/";
 }
 
 // Get references to input field, form, and messages container
@@ -223,23 +223,23 @@ async function loadConversationHistory() {
   const data = await response.json();
   if (data.interactions && data.interactions.length > 0) {
     data.interactions.forEach((interaction) => {
-      // Create and display the user's message div from history
       const userMessageDiv = document.createElement("div");
       userMessageDiv.classList.add("message", "user-message");
       userMessageDiv.textContent = `You: ${interaction.userInput}`;
       messagesContainer.appendChild(userMessageDiv);
 
-      // Create and display the bot's message div from history
       const botMessageDiv = document.createElement("div");
       botMessageDiv.classList.add("message", "bot-message");
-      botMessageDiv.textContent = `Bot: ${interaction.botResponse}`;
+
+      // Convert botResponse from Markdown to HTML and use innerHTML to render it
+      botMessageDiv.innerHTML = `Bot: ${marked.parse(interaction.botResponse)}`;
       messagesContainer.appendChild(botMessageDiv);
 
-      // Add to conversation history
       conversationHistory.push({ role: "user", content: interaction.userInput });
       conversationHistory.push({ role: "assistant", content: interaction.botResponse });
     });
 
+    // Scroll to the bottom of the chat
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
   }
 }
