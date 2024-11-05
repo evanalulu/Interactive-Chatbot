@@ -59,41 +59,51 @@ function submitSettings() {
 }
 
 function displayQuestion(questionText) {
-  // Example input format:
-  // **Question:** ¿Cuál es la forma correcta del verbo "comer" en la primera persona del singular del pretérito perfecto?
-  // A) Comí
-  // B) Comera
-  // C) He comido
-  // D) Coma
+  // Split the response into sections based on "---"
+  const sections = questionText.split("---");
 
-  const questionLines = questionText.split("\n");
+  const questionSection = sections[0].trim();
+  const answerSection = sections[1]?.replace("Correct Answer:", "").trim();
+  const explanationSection = sections[2]?.replace("Brief Explanation:", "").trim();
+
+  const questionLines = questionSection.split("\n");
   const question = questionLines[0].replace("**Question:** ", "").trim();
   const choices = questionLines.slice(1).filter((line) => line);
 
   document.querySelector("#question-area p").textContent = question;
 
   const answersDiv = document.getElementById("answers");
-  answersDiv.innerHTML = "";
+  answersDiv.innerHTML = ""; // Clear previous choices
 
   choices.forEach((choice) => {
-    const choiceText = choice.trim();
     const choiceDiv = document.createElement("div");
-    choiceDiv.textContent = choiceText;
+    choiceDiv.textContent = choice.trim();
     answersDiv.appendChild(choiceDiv);
   });
 
-  // Set up answer buttons
+  document.getElementById("question-area").dataset.correctAnswer = answerSection;
+  document.getElementById("question-area").dataset.explanation = explanationSection;
+
   const answerButtons = document.querySelectorAll("#answer-buttons button");
   answerButtons.forEach((button, index) => {
-    button.onclick = () => checkAnswer(choices[index]); // Associate each button with the choice
+    button.onclick = () => checkAnswer(choices[index], answerSection, explanationSection);
   });
 }
 
-// function checkAnswer(selectedChoice) {
-//   // Here, you could add logic to verify the answer and give feedback
-//   console.log("Selected choice:", selectedChoice);
-//   // Implement any feedback mechanism here
-// }
+function checkAnswer(selectedChoice, correctAnswer, explanation) {
+  const isCorrect = selectedChoice.startsWith(correctAnswer); // Check if selected choice matches the correct answer
+
+  if (isCorrect) {
+    alert("Correct! 🎉");
+  } else {
+    alert("Incorrect. 😞");
+  }
+
+  // Display explanation regardless of correctness
+  const explanationDiv = document.createElement("div");
+  explanationDiv.textContent = `Explanation: ${explanation}`;
+  document.getElementById("question-area").appendChild(explanationDiv);
+}
 
 // Retrieve participantID from localStorage
 const participantID = localStorage.getItem("participantID");
