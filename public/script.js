@@ -108,6 +108,7 @@ function checkAnswer(selectedChoice, correctAnswer, explanation) {
 
 function loadNextQuestion() {
   document.getElementById("feedback").style.display = "none";
+  document.getElementById("next-question-button").style.display = "none";
   document.getElementById("answers").innerHTML = "";
 
   // Trigger next question generation
@@ -180,7 +181,9 @@ async function sendMessage(event) {
     // Create and display the bot's message div
     const botMessageDiv = document.createElement("div");
     botMessageDiv.classList.add("message", "bot-message");
-    botMessageDiv.textContent = `Bot: ${data.botResponse}`;
+
+    // Use innerHTML to render the HTML-formatted response
+    botMessageDiv.innerHTML = `Bot: ${data.botResponse}`;
     messagesContainer.appendChild(botMessageDiv);
 
     // Create and display Bing search results if available
