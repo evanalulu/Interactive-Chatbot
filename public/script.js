@@ -70,39 +70,48 @@ function displayQuestion(questionText) {
   const question = questionLines[0].replace("**Question:** ", "").trim();
   const choices = questionLines.slice(1).filter((line) => line);
 
-  document.querySelector("#question-area p").textContent = question;
+  const questionElement = document.querySelector("#question-area p");
+  questionElement.textContent = question; // Set new question
 
+  // Clear previous q/a
   const answersDiv = document.getElementById("answers");
-  answersDiv.innerHTML = ""; // Clear previous choices
+  answersDiv.innerHTML = "";
 
   choices.forEach((choice) => {
-    const choiceDiv = document.createElement("div");
-    choiceDiv.textContent = choice.trim();
-    answersDiv.appendChild(choiceDiv);
+    const choiceButton = document.createElement("button");
+    choiceButton.textContent = choice.trim();
+    choiceButton.classList.add("choice-button");
+    choiceButton.onclick = () => checkAnswer(choice, answerSection, explanationSection);
+    answersDiv.appendChild(choiceButton);
   });
 
-  document.getElementById("question-area").dataset.correctAnswer = answerSection;
-  document.getElementById("question-area").dataset.explanation = explanationSection;
+  // Clear previous feedback
+  document.querySelector("#feedback-text").textContent = "";
+  document.querySelector("#feedback-explanation").textContent = "";
 
-  const answerButtons = document.querySelectorAll("#answer-buttons button");
-  answerButtons.forEach((button, index) => {
-    button.onclick = () => checkAnswer(choices[index], answerSection, explanationSection);
-  });
+  document.getElementById("next-question-button").style.display = "none";
 }
 
 function checkAnswer(selectedChoice, correctAnswer, explanation) {
-  const isCorrect = selectedChoice.startsWith(correctAnswer); // Check if selected choice matches the correct answer
+  const isCorrect = selectedChoice.startsWith(correctAnswer);
 
-  if (isCorrect) {
-    alert("Correct! 🎉");
-  } else {
-    alert("Incorrect. 😞");
-  }
+  const feedbackText = document.getElementById("feedback-text");
+  const feedbackExplanation = document.getElementById("feedback-explanation");
 
-  // Display explanation regardless of correctness
-  const explanationDiv = document.createElement("div");
-  explanationDiv.textContent = `Explanation: ${explanation}`;
-  document.getElementById("question-area").appendChild(explanationDiv);
+  feedbackText.textContent = isCorrect ? "Correct! 🎉" : "Incorrect. 😞";
+  feedbackExplanation.textContent = `Explanation: ${explanation}`;
+
+  document.getElementById("feedback").style.display = "block";
+
+  document.getElementById("next-question-button").style.display = "block";
+}
+
+function loadNextQuestion() {
+  document.getElementById("feedback").style.display = "none";
+  document.getElementById("answers").innerHTML = "";
+
+  // Trigger next question generation
+  submitSettings();
 }
 
 // Retrieve participantID from localStorage
