@@ -104,6 +104,40 @@ app.post("/submit", async (req, res) => {
   }
 });
 
+// Extract topics discussed with chatbot based on past 10 interactions
+app.post("/extract-topics", async (req, res) => {
+  const { interactions } = req.body;
+  console.log(interactions);
+
+  if (!interactions) {
+    return res.status(400).json({ error: "No interactions provided" });
+  }
+
+  const prompt = `
+    Please identify the key topics discussed in the following Spanish exam preparation interactions. List each topic as a concise phrase relevant to a Spanish language exam. Only include unique topics:
+    
+    Interactions: ${JSON.stringify({ interactions })}
+    
+    Provide the topics as a comma-separated list.
+  `;
+
+  try {
+    const openaiResponse = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [{ role: "user", content: prompt }],
+      max_tokens: 100,
+    });
+
+    const topicsText = openaiResponse.choices[0].message.content.trim();
+    const topics = topicsText.split(",").map((topic) => topic.trim());
+
+    res.json({ topics });
+  } catch (error) {
+    console.error("Error extracting topics:", error);
+    res.status(500).json({ error: "Failed to extract topics" });
+  }
+});
+
 // Handle POST requests to /generate-question
 app.post("/generate-question", async (req, res) => {
   try {
@@ -135,8 +169,6 @@ app.post("/generate-question", async (req, res) => {
       ---
       Brief Explanation: "Comí" is the correct form in the simple past tense for the first person singular in Spanish. This tense is used for actions completed in the past, whereas the other options correspond to different tenses or moods.
     `.trim();
-
-    console.log("Generated prompt:", prompt);
 
     // Make the request to the OpenAI API
     const openaiResponse = await openai.chat.completions.create({
