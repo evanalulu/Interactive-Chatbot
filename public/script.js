@@ -14,7 +14,6 @@ document.getElementById("chat-container").addEventListener("focus", () => {
 
 // Retrieve participantID from localStorage
 const participantID = localStorage.getItem("participantID");
-console.log(participantID);
 
 // Alert and prompt if no participantID
 if (!participantID) {
@@ -32,19 +31,53 @@ function logEvent(type, element) {
   });
 }
 
-function submitSettings() {
+// Extracting relevant topics from recent interactions
+document.getElementById("start-quiz-button").addEventListener("click", async () => {
+  // Get the last 10 interactions when the user clicks "Start Quiz"
+  const recentInteractions = conversationHistory.slice(-10);
+  const extractedTopics = await extractTopicsFromHistory(recentInteractions);
+
+  // Combine extracted topics with selected topics for the quiz
+  // const quizTopics = getQuizTopics(extractedTopics);
+
+  // Start the quiz with the combined topics
+  // startQuiz(quizTopics);
+});
+
+async function extractTopicsFromHistory(interactions) {
+  try {
+    const response = await fetch("/extract-topics", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ interactions }),
+    });
+
+    const data = await response.json();
+    console.log("Extracted Topics:", data.topics);
+    submitSettings(data.topics);
+
+    return data.topics || [];
+  } catch (error) {
+    console.error("Error extracting topics:", error);
+    return [];
+  }
+}
+
+function submitSettings(extractedTopics) {
+  // Remove start quiz button from screen
+  document.getElementById("start-quiz-button").style.display = "none";
+
   const topics = Array.from(document.querySelectorAll('input[name="topic"]:checked')).map((input) => input.value);
   const questionTypes = Array.from(document.querySelectorAll('input[name="question-type"]:checked')).map(
     (input) => input.value
   );
   const difficulty = document.getElementById("difficulty").value;
 
-  const participantID = participantID; // Replace this with the actual participant ID
   const history = []; // Replace with actual history if you're maintaining it
 
   const data = {
     participantID: participantID,
-    topics: topics,
+    topics: extractedTopics,
     questionTypes: questionTypes,
     difficulty: difficulty,
     history: history,
