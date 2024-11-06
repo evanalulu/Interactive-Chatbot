@@ -31,18 +31,16 @@ function logEvent(type, element) {
   });
 }
 
-// Extracting relevant topics from recent interactions
-document.getElementById("start-quiz-button").addEventListener("click", async () => {
-  // Get the last 10 interactions when the user clicks "Start Quiz"
+async function startQuizProcess() {
+  // Get the last 10 interactions from the conversation history
   const recentInteractions = conversationHistory.slice(-10);
-  const extractedTopics = await extractTopicsFromHistory(recentInteractions);
 
-  // Combine extracted topics with selected topics for the quiz
-  // const quizTopics = getQuizTopics(extractedTopics);
+  // Extract topics from recent interactions and then submit settings
+  await extractTopicsFromHistory(recentInteractions);
+}
 
-  // Start the quiz with the combined topics
-  // startQuiz(quizTopics);
-});
+// Extracting relevant topics from recent interactions
+document.getElementById("start-quiz-button").addEventListener("click", startQuizProcess);
 
 async function extractTopicsFromHistory(interactions) {
   try {
@@ -54,9 +52,9 @@ async function extractTopicsFromHistory(interactions) {
 
     const data = await response.json();
     console.log("Extracted Topics:", data.topics);
-    submitSettings(data.topics);
 
-    return data.topics || [];
+    const topics = Array.isArray(data.topics) ? data.topics : [];
+    submitSettings(topics);
   } catch (error) {
     console.error("Error extracting topics:", error);
     return [];
@@ -67,20 +65,22 @@ function submitSettings(extractedTopics) {
   // Remove start quiz button from screen
   document.getElementById("start-quiz-button").style.display = "none";
 
-  const topics = Array.from(document.querySelectorAll('input[name="topic"]:checked')).map((input) => input.value);
+  const selectedTopics = Array.from(document.querySelectorAll('input[name="topic"]:checked')).map(
+    (input) => input.value
+  );
   const questionTypes = Array.from(document.querySelectorAll('input[name="question-type"]:checked')).map(
     (input) => input.value
   );
   const difficulty = document.getElementById("difficulty").value;
 
-  const history = []; // Replace with actual history if you're maintaining it
+  const combinedTopics = [...new Set([...selectedTopics, ...extractedTopics])];
+  console.log("Combined topics: " + combinedTopics);
 
   const data = {
     participantID: participantID,
-    topics: extractedTopics,
+    topics: combinedTopics,
     questionTypes: questionTypes,
     difficulty: difficulty,
-    history: history,
   };
 
   console.log("Data to send:", data); // Log the data object for verification
@@ -146,7 +146,6 @@ function checkAnswer(selectedChoice, correctAnswer, explanation) {
   feedbackExplanation.textContent = `Explanation: ${explanation}`;
 
   document.getElementById("feedback").style.display = "block";
-
   document.getElementById("next-question-button").style.display = "block";
 }
 
@@ -155,8 +154,7 @@ function loadNextQuestion() {
   document.getElementById("next-question-button").style.display = "none";
   document.getElementById("answers").innerHTML = "";
 
-  // Trigger next question generation
-  submitSettings();
+  startQuizProcess();
 }
 
 // Get references to input field, form, and messages container
@@ -220,7 +218,6 @@ async function sendMessage(event) {
     messagesContainer.appendChild(botMessageDiv);
 
     // Create and display Bing search results if available
-    // Create and display Bing search results if available
     if (data.searchResults && data.searchResults.length > 0) {
       // Clear previous search results
       const searchSection = document.getElementById("search-section");
@@ -250,7 +247,7 @@ async function loadConversationHistory() {
   const response = await fetch("/history", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ participantID }), // Send participantID to the server
+    body: JSON.stringify({ participantID }),
   });
 
   const data = await response.json();
