@@ -28,12 +28,31 @@
         <h2>Quiz Yourself with AI</h2>
         <!-- Dropdown to select coursework -->
         <div id="coursework-container">
-          <h3>
+          <h4>
             <label for="coursework">Select coursework:</label>
             <select id="coursework">
-              <option value="ibdp-spanish-ab-initio">IBDP Spanish Ab Initio</option>
+              <optgroup label="High School Levels">
+                <option value="hs-freshman-spanish">High School Freshman Spanish</option>
+                <option value="hs-sophomore-spanish">High School Sophomore Spanish</option>
+                <option value="hs-junior-spanish">High School Junior Spanish</option>
+                <option value="hs-senior-spanish">High School Senior Spanish</option>
+              </optgroup>
+              <optgroup label="College Levels">
+                <option value="college-freshman-spanish">College Spanish 100 Levels (Freshman)</option>
+                <option value="college-sophomore-spanish">College Spanish 200 Levels (Sophomore)</option>
+                <option value="college-junior-spanish">College Spanish 300 Levels (Junior)</option>
+                <option value="college-senior-spanish">College Spanish 400 Levels (Senior)</option>
+              </optgroup>
             </select>
-          </h3>
+          </h4>
+        </div>
+
+        <!-- Upload syllabus button -->
+        <div id="syllabus-upload-container">
+          <h4>
+            <label for="syllabus-upload" class="syllabus-label">Upload Syllabus (PDF):</label>
+            <input type="file" id="syllabus-upload" accept="application/pdf" />
+          </h4>
         </div>
 
         <div id="quiz-container">
