@@ -107,7 +107,6 @@ app.post("/submit", async (req, res) => {
 // Extract topics discussed with chatbot based on past 10 interactions
 app.post("/extract-topics", async (req, res) => {
   const { interactions } = req.body;
-  console.log(interactions);
 
   if (!interactions) {
     return res.status(400).json({ error: "No interactions provided" });
@@ -145,9 +144,9 @@ app.post("/generate-question", async (req, res) => {
     const { history = [], participantID, topics, questionTypes, difficulty } = req.body;
 
     // Validate the required fields
-    if (!participantID || !topics || !questionTypes || !difficulty) {
-      return res.status(400).json({ error: "Missing required fields" });
-    }
+    // if (!participantID || !topics || !questionTypes || !difficulty) {
+    //   return res.status(400).json({ error: "Missing required fields" });
+    // }
 
     // Construct the prompt based on user selections
     const prompt = `
