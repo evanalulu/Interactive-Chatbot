@@ -1,9 +1,20 @@
-// Log click events on the "Submit" button
+// Retrieve participantID from localStorage
+const participantID = localStorage.getItem("participantID");
+if (!participantID) {
+  alert("Please enter a participant ID.");
+  window.location.href = "/";
+}
+
+let conversationHistory = [];
+const inputField = document.getElementById("user-input");
+const chatForm = document.getElementById("chat-form");
+const messagesContainer = document.getElementById("messages");
+chatForm.addEventListener("submit", sendMessage);
+
 document.getElementById("submit").addEventListener("click", () => {
   // logEvent('click', 'Send Button');
 });
 
-// Log hover and focus events on the input field
 document.getElementById("chat-container").addEventListener("mouseover", () => {
   // logEvent('hover', 'User Input');
 });
@@ -11,16 +22,6 @@ document.getElementById("chat-container").addEventListener("mouseover", () => {
 document.getElementById("chat-container").addEventListener("focus", () => {
   // logEvent('focus', 'User Input');
 });
-
-// Retrieve participantID from localStorage
-const participantID = localStorage.getItem("participantID");
-
-// Alert and prompt if no participantID
-if (!participantID) {
-  alert("Please enter a participant ID.");
-  // Redirect to login if no participantID is set
-  window.location.href = "/";
-}
 
 // Function to log events to the server
 function logEvent(type, element) {
@@ -30,142 +31,6 @@ function logEvent(type, element) {
     body: JSON.stringify({ eventType: type, elementName: element, timestamp: new Date() }),
   });
 }
-
-async function startQuizProcess() {
-  // Get the last 10 interactions from the conversation history
-  const recentInteractions = conversationHistory.slice(-10);
-
-  // Extract topics from recent interactions and then submit settings
-  await extractTopicsFromHistory(recentInteractions);
-}
-
-// Extracting relevant topics from recent interactions
-document.getElementById("start-quiz-button").addEventListener("click", startQuizProcess);
-
-async function extractTopicsFromHistory(interactions) {
-  try {
-    const response = await fetch("/extract-topics", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ interactions }),
-    });
-
-    const data = await response.json();
-    console.log("Extracted Topics:", data.topics);
-
-    const topics = Array.isArray(data.topics) ? data.topics : [];
-    submitSettings(topics);
-  } catch (error) {
-    console.error("Error extracting topics:", error);
-    return [];
-  }
-}
-
-function submitSettings(extractedTopics) {
-  // Remove start quiz button from screen
-  document.getElementById("start-quiz-button").style.display = "none";
-
-  const selectedTopics = Array.from(document.querySelectorAll('input[name="topic"]:checked')).map(
-    (input) => input.value
-  );
-  const questionTypes = Array.from(document.querySelectorAll('input[name="question-type"]:checked')).map(
-    (input) => input.value
-  );
-  const difficulty = document.getElementById("difficulty").value;
-
-  const combinedTopics = [...new Set([...selectedTopics, ...extractedTopics])];
-  console.log("Combined topics: " + combinedTopics);
-
-  const data = {
-    participantID: participantID,
-    topics: combinedTopics,
-    questionTypes: questionTypes,
-    difficulty: difficulty,
-  };
-
-  console.log("Data to send:", data); // Log the data object for verification
-
-  fetch("/generate-question", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      displayQuestion(data.question);
-      console.log("Generated Question:", data.question);
-    })
-    .catch((error) => {
-      console.error("Error:", error);
-    });
-}
-
-function displayQuestion(questionText) {
-  // Split the response into sections based on "---"
-  const sections = questionText.split("---");
-
-  const questionSection = sections[0].trim();
-  const answerSection = sections[1]?.replace("Correct Answer:", "").trim();
-  const explanationSection = sections[2]?.replace("Brief Explanation:", "").trim();
-
-  const questionLines = questionSection.split("\n");
-  const question = questionLines[0].replace("**Question:** ", "").trim();
-  const choices = questionLines.slice(1).filter((line) => line);
-
-  const questionElement = document.querySelector("#question-area p");
-  questionElement.textContent = question; // Set new question
-
-  // Clear previous q/a
-  const answersDiv = document.getElementById("answers");
-  answersDiv.innerHTML = "";
-
-  choices.forEach((choice) => {
-    const choiceButton = document.createElement("button");
-    choiceButton.textContent = choice.trim();
-    choiceButton.classList.add("choice-button");
-    choiceButton.onclick = () => checkAnswer(choice, answerSection, explanationSection);
-    answersDiv.appendChild(choiceButton);
-  });
-
-  // Clear previous feedback
-  document.querySelector("#feedback-text").textContent = "";
-  document.querySelector("#feedback-explanation").textContent = "";
-
-  document.getElementById("next-question-button").style.display = "none";
-}
-
-function checkAnswer(selectedChoice, correctAnswer, explanation) {
-  const isCorrect = selectedChoice.startsWith(correctAnswer);
-
-  const feedbackText = document.getElementById("feedback-text");
-  const feedbackExplanation = document.getElementById("feedback-explanation");
-
-  feedbackText.textContent = isCorrect ? "Correct! 🎉" : "Incorrect. 😞";
-  feedbackExplanation.textContent = `Explanation: ${explanation}`;
-
-  document.getElementById("feedback").style.display = "block";
-  document.getElementById("next-question-button").style.display = "block";
-}
-
-function loadNextQuestion() {
-  document.getElementById("feedback").style.display = "none";
-  document.getElementById("next-question-button").style.display = "none";
-  document.getElementById("answers").innerHTML = "";
-
-  startQuizProcess();
-}
-
-// Get references to input field, form, and messages container
-const inputField = document.getElementById("user-input");
-const chatForm = document.getElementById("chat-form");
-const messagesContainer = document.getElementById("messages");
-
-// Add an event listener to the chat form to trigger sendMessage() when submitted
-chatForm.addEventListener("submit", sendMessage);
-
-let conversationHistory = [];
 
 async function sendMessage(event) {
   event.preventDefault();
@@ -240,6 +105,127 @@ async function sendMessage(event) {
   } catch (error) {
     console.error("Error:", error);
   }
+}
+
+async function startQuizProcess() {
+  // Get the last 10 interactions from the conversation history
+  const recentInteractions = conversationHistory.slice(-10);
+
+  // Extract topics from recent interactions and then submit settings
+  await extractTopicsFromHistory(recentInteractions);
+}
+
+// Extracting relevant topics from recent interactions
+document.getElementById("start-quiz-button").addEventListener("click", startQuizProcess);
+
+async function extractTopicsFromHistory(interactions) {
+  try {
+    const response = await fetch("/extract-topics", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ interactions }),
+    });
+
+    const data = await response.json();
+    console.log("Extracted Topics:", data.topics);
+
+    const topics = Array.isArray(data.topics) ? data.topics : [];
+    submitSettings(topics);
+  } catch (error) {
+    console.error("Error extracting topics:", error);
+    return [];
+  }
+}
+
+function submitSettings(extractedTopics) {
+  // Remove start quiz button from screen
+  document.getElementById("start-quiz-button").style.display = "none";
+
+  const selectedTopics = Array.from(document.querySelectorAll('input[name="topic"]:checked')).map(
+    (input) => input.value
+  );
+  const questionTypes = Array.from(document.querySelectorAll('input[name="question-type"]:checked')).map(
+    (input) => input.value
+  );
+  const difficulty = document.getElementById("difficulty").value;
+
+  const combinedTopics = [...new Set([...selectedTopics, ...extractedTopics])];
+  console.log("Combined topics: " + combinedTopics);
+
+  const data = {
+    participantID: participantID,
+    topics: combinedTopics,
+    questionTypes: questionTypes,
+    difficulty: difficulty,
+  };
+
+  console.log("Data to send:", data);
+
+  fetch("/generate-question", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      displayQuestion(data.question);
+      console.log("Generated Question:", data.question);
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
+}
+
+function displayQuestion(questionText) {
+  // Split the response into sections based on "---"
+  const sections = questionText.split("---");
+
+  const questionSection = sections[0].trim();
+  const answerSection = sections[1]?.replace("Correct Answer:", "").trim();
+  const explanationSection = sections[2]?.replace("Brief Explanation:", "").trim();
+
+  const questionLines = questionSection.split("\n");
+  const question = questionLines[0].replace("**Question:** ", "").trim();
+  const choices = questionLines.slice(1).filter((line) => line);
+
+  const questionElement = document.querySelector("#question-area p");
+  questionElement.textContent = question;
+
+  // Clear previous q/a
+  const answersDiv = document.getElementById("answers");
+  answersDiv.innerHTML = "";
+
+  choices.forEach((choice) => {
+    const choiceButton = document.createElement("button");
+    choiceButton.textContent = choice.trim();
+    choiceButton.classList.add("choice-button");
+    choiceButton.onclick = () => checkAnswer(choice, answerSection, explanationSection);
+    answersDiv.appendChild(choiceButton);
+  });
+}
+
+function checkAnswer(selectedChoice, correctAnswer, explanation) {
+  const isCorrect = selectedChoice.startsWith(correctAnswer);
+
+  const feedbackText = document.getElementById("feedback-text");
+  const feedbackExplanation = document.getElementById("feedback-explanation");
+
+  feedbackText.textContent = isCorrect ? "Correct! 🎉" : "Incorrect. 😞";
+  feedbackExplanation.textContent = `Explanation: ${explanation}`;
+
+  document.getElementById("feedback").style.display = "block";
+  document.getElementById("next-question-button").style.display = "block";
+}
+
+function loadNextQuestion() {
+  document.querySelector("#question-area p").textContent = "";
+  document.getElementById("feedback").style.display = "none";
+  document.getElementById("next-question-button").style.display = "none";
+  document.getElementById("answers").innerHTML = "";
+
+  startQuizProcess();
 }
 
 // Function to fetch and load existing conversation history
