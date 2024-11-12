@@ -47,6 +47,15 @@ app.post("/submit", async (req, res) => {
     return res.status(400).json({ error: "Invalid input" });
   }
 
+  const prompt = `You are a supportive and knowledgeable language tutor, specializing in helping 
+  high school and undergraduate students prepare for their Spanish exams. 
+  Focus on explaining vocabulary, grammar, conjugations, sentence structure, and exam strategies 
+  in a simple and clear way. 
+  Adapt your responses to the student's level and try to make learning engaging and stress-free. 
+  Whenever user asks a question, avoid giving tips for studying
+  Encourage user to try the quiz on the right-hand-side of the page for reinforcing and retaining 
+  the information they just learned every 2-3 messages or so.`;
+
   try {
     // Construct the messages array based on whether conversation history exists or not
     const messages =
@@ -54,16 +63,14 @@ app.post("/submit", async (req, res) => {
         ? [
             {
               role: "system",
-              content:
-                "You are a supportive and knowledgeable language tutor, specializing in helping high school and undergraduate students prepare for their Spanish exams. Focus on explaining vocabulary, grammar, conjugations, sentence structure, and exam strategies in a simple and clear way. Offer interactive conversation practice if the student wants to try speaking, and provide helpful examples for difficult concepts. Adapt your responses to the student's level and try to make learning engaging and stress-free.",
+              content: prompt,
             },
             { role: "user", content: userInput },
           ]
         : [
             {
               role: "system",
-              content:
-                "You are a supportive and knowledgeable language tutor, specializing in helping high school and undergraduate students prepare for their Spanish exams. Focus on explaining vocabulary, grammar, conjugations, sentence structure, and exam strategies in a simple and clear way. Offer interactive conversation practice if the student wants to try speaking, and provide helpful examples for difficult concepts. Adapt your responses to the student's level and try to make learning engaging and stress-free.",
+              content: prompt,
             },
             ...history,
             { role: "user", content: userInput },
@@ -80,18 +87,19 @@ app.post("/submit", async (req, res) => {
     console.log(botResponse);
 
     // Perform the Bing search
-    const bingResponse = await axios.get("https://api.bing.microsoft.com/v7.0/search", {
-      params: { q: userInput }, // Use the user's input as the search query
-      headers: {
-        "Ocp-Apim-Subscription-Key": process.env.BING_API_KEY,
-      },
-    });
+    // const bingResponse = await axios.get("https://api.bing.microsoft.com/v7.0/search", {
+    //   params: { q: userInput }, // Use the user's input as the search query
+    //   headers: {
+    //     "Ocp-Apim-Subscription-Key": process.env.BING_API_KEY,
+    //   },
+    // });
 
-    const searchResults = bingResponse.data.webPages.value.slice(0, 3).map((result) => ({
-      title: result.name,
-      url: result.url,
-      snippet: result.snippet,
-    }));
+    // const searchResults = bingResponse.data.webPages.value.slice(0, 3).map((result) => ({
+    //   title: result.name,
+    //   url: result.url,
+    //   snippet: result.snippet,
+    // }));
+    const searchResults = "";
 
     // Log the interaction to MongoDB after botResponse is generated
     const interaction = new Interaction({ userInput, botResponse, participantID });
@@ -141,7 +149,7 @@ app.post("/extract-topics", async (req, res) => {
 app.post("/generate-question", async (req, res) => {
   try {
     console.log("Request body received:", req.body);
-    const { history = [], participantID, topics, questionTypes, difficulty } = req.body;
+    const { courseworkLevel, history = [], participantID, topics, questionTypes, difficulty } = req.body;
 
     // Validate the required fields
     // if (!participantID || !topics || !questionTypes || !difficulty) {
@@ -150,7 +158,7 @@ app.post("/generate-question", async (req, res) => {
 
     // Construct the prompt based on user selections
     const prompt = `
-      I’m practicing for the [Exam Type: IBDP Spanish Ab Initio]. 
+      I’m practicing for the ${courseworkLevel}}. 
       Provide a [Question Type: ${questionTypes.join(", ")}] question related to [Topics: ${topics.join(", ")}]. 
       Include 4 answer choices labeled A, B, C, D. Only one answer should be correct. Difficulty level: [${difficulty}].
 

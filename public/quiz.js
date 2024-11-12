@@ -1,3 +1,36 @@
+document.getElementById("syllabus-upload").addEventListener("change", handleFileUpload);
+
+async function handleFileUpload(event) {
+  const file = event.target.files[0];
+
+  // Check if a file was selected and if it's a PDF
+  if (file && file.type === "application/pdf") {
+    const formData = new FormData();
+    formData.append("syllabus", file);
+    formData.append("participantID", participantID);
+    console.log(file);
+  }
+
+  //   try {
+  //     const response = await fetch("/upload-syllabus", {
+  //       method: "POST",
+  //       body: formData,
+  //     });
+
+  //     if (response.ok) {
+  //       alert("Syllabus uploaded successfully!");
+  //     } else {
+  //       alert("Failed to upload syllabus. Please try again.");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error uploading syllabus:", error);
+  //     alert("An error occurred while uploading the syllabus.");
+  //   }
+  // } else {
+  //   alert("Please upload a valid PDF file.");
+  // }
+}
+
 async function startQuizProcess() {
   // Get the last 10 interactions from the conversation history
   const recentInteractions = conversationHistory.slice(-10);
@@ -32,6 +65,8 @@ function submitSettings(extractedTopics) {
   // Remove start quiz button from screen
   document.getElementById("start-quiz-button").style.display = "none";
 
+  const courseworkLevel = document.getElementById("coursework").value;
+
   const selectedTopics = Array.from(document.querySelectorAll('input[name="topic"]:checked')).map(
     (input) => input.value
   );
@@ -44,6 +79,7 @@ function submitSettings(extractedTopics) {
   console.log("Combined topics: " + combinedTopics);
 
   const data = {
+    courseworkLevel: courseworkLevel,
     participantID: participantID,
     topics: combinedTopics,
     questionTypes: questionTypes,
