@@ -79,19 +79,20 @@ app.post("/submit", async (req, res) => {
     console.log(openaiResponse.choices[0].message.content.trim());
     console.log(botResponse);
 
-    // Perform the Bing search
-    const bingResponse = await axios.get("https://api.bing.microsoft.com/v7.0/search", {
-      params: { q: userInput }, // Use the user's input as the search query
-      headers: {
-        "Ocp-Apim-Subscription-Key": process.env.BING_API_KEY,
-      },
-    });
+// Perform the Bing search
+    // const bingResponse = await axios.get("https://api.bing.microsoft.com/v7.0/search", {
+    //   params: { q: userInput }, // Use the user's input as the search query
+    //   headers: {
+    //     "Ocp-Apim-Subscription-Key": process.env.BING_API_KEY,
+    //   },
+    // });
 
-    const searchResults = bingResponse.data.webPages.value.slice(0, 3).map((result) => ({
-      title: result.name,
-      url: result.url,
-      snippet: result.snippet,
-    }));
+    // const searchResults = bingResponse.data.webPages.value.slice(0, 3).map((result) => ({
+    //   title: result.name,
+    //   url: result.url,
+    //   snippet: result.snippet,
+    // }));
+    const searchResults = "";
 
     // Log the interaction to MongoDB after botResponse is generated
     const interaction = new Interaction({ userInput, botResponse, participantID });
