@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Flow Page</title>
+    <link rel="stylesheet" href="flow.css" />
+  </head>
+  <body>
+    <form id="flow-form">
+      <h2>Your Activity Progress</h2>
+      <!-- Expandable List with Checkboxes -->
+      <div class="accordion">
+        <div class="accordion-item">
+          <input type="checkbox" id="demographics" name="tasks" value="demographics" />
+          <label for="demographics" class="accordion-button">Complete the Demographics Survey</label>
+          <div class="accordion-content">
+            <p>
+              Complete the
+              <a href="https://usfca.qualtrics.com/jfe/form/SV_3VO4lZd4crBgKlU" target="_blank"
+                >Survey to provide information</a
+              >
+              about yourself.
+            </p>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <input type="checkbox" id="pre-task-quiz" name="tasks" value="pre-task-quiz" />
+          <label for="pre-task-quiz" class="accordion-button">Complete the Pre-task Vocab Quiz</label>
+          <div class="accordion-content">
+            <p>
+              Take the
+              <a href="https://usfca.qualtrics.com/jfe/form/SV_4TULuvVstVkStX8" target="_blank"
+                >Pre-task Vocab Quiz to test</a
+              >
+              your understanding before starting the main task.
+            </p>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <input type="checkbox" id="task" name="tasks" value="task" />
+          <label for="task" class="accordion-button">Complete the Task</label>
+          <div class="accordion-content">
+            <p>Complete the main task as instructed.</p>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <input type="checkbox" id="post-task-quiz" name="tasks" value="post-task-quiz" />
+          <label for="post-task-quiz" class="accordion-button">Complete the Post-task Vocab Quiz</label>
+          <div class="accordion-content">
+            <p>
+              Take the
+              <a href="https://usfca.qualtrics.com/jfe/form/SV_4VDMxprs5m2QqW2" target="_blank">Post-task Vocab Quiz</a>
+              to assess your understanding after completing the task.
+            </p>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <input type="checkbox" id="post-task-questionnaire" name="tasks" value="post-task-questionnaire" />
+          <label for="post-task-questionnaire" class="accordion-button">Complete the Post-task Questionnaire</label>
+          <div class="accordion-content">
+            <p>
+              Fill out the
+              <a href="https://usfca.qualtrics.com/jfe/form/SV_db8KANpgYELg8AK" target="_blank"
+                >Post-task Questionnaire</a
+              >
+              to provide your feedback on the task.
+            </p>
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <script>
+      // JavaScript to handle accordion behavior
+      document.querySelectorAll(".accordion-item").forEach((item) => {
+        item.addEventListener("click", (event) => {
+          // Prevent triggering when clicking directly on the checkbox
+          if (event.target.tagName === "INPUT") {
+            return;
+          }
+
+          const content = item.querySelector(".accordion-content");
+          item.classList.toggle("active");
+          if (content.style.maxHeight) {
+            content.style.maxHeight = null;
+          } else {
+            content.style.maxHeight = content.scrollHeight + "px";
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
