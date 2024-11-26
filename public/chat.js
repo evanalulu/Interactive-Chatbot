@@ -1,10 +1,4 @@
-// Retrieve participantID from localStorage
 const participantID = localStorage.getItem("participantID");
-if (!participantID) {
-  alert("Please enter a participant ID.");
-  window.location.href = "/";
-}
-
 let conversationHistory = [];
 const inputField = document.getElementById("user-input");
 const chatForm = document.getElementById("chat-form");
@@ -60,25 +54,6 @@ async function sendMessage(event) {
     // Use innerHTML to render the HTML-formatted response
     botMessageDiv.innerHTML = `Bot: ${data.botResponse}`;
     messagesContainer.appendChild(botMessageDiv);
-
-    // Create and display Bing search results if available
-    if (data.searchResults && data.searchResults.length > 0) {
-      // Clear previous search results
-      const searchSection = document.getElementById("search-section");
-      searchSection.innerHTML = ""; // Clear any previous results
-
-      const searchResultsHeader = document.createElement("h3");
-      searchResultsHeader.textContent = "Bing Search Results:";
-      searchSection.appendChild(searchResultsHeader);
-
-      // Display the search results
-      data.searchResults.forEach((result) => {
-        const resultDiv = document.createElement("div");
-        resultDiv.classList.add("search-result");
-        resultDiv.innerHTML = `<a href="${result.url}" target="_blank">${result.title}</a><p>${result.snippet}</p>`;
-        searchSection.appendChild(resultDiv);
-      });
-    }
 
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
   } catch (error) {

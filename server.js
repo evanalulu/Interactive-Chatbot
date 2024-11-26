@@ -35,6 +35,38 @@ app.get("/chatbot", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "chatbot.html"));
 });
 
+app.post("/submit-basic", async (req, res) => {
+  // Extract values from req.body
+  const { history = [], userInput, participantID } = req.body;
+
+  // Check if participantID is provided
+  if (!participantID) {
+    return res.status(400).send("Participant ID is required");
+  }
+
+  // Check if userInput is provided
+  if (!userInput) {
+    return res.status(400).json({ error: "Invalid input: User input is required" });
+  }
+
+  try {
+    // Assuming you have the correct OpenAI configuration, proceed to request a response
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [{ role: "user", content: userInput }],
+      max_tokens: 500,
+    });
+
+    // Extract bot response and send as JSON
+    const botResponse = response.choices[0].message.content.trim();
+    res.json({ botResponse });
+  } catch (error) {
+    // Handle errors from OpenAI API
+    console.error("Error with OpenAI API: ", error.message);
+    res.status(500).json({ error: "Server Error" });
+  }
+});
+
 // Handle POST requests to /submit
 app.post("/submit", async (req, res) => {
   const { history = [], input: userInput, participantID } = req.body; // Only use userInput and history from the request body
