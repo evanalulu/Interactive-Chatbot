@@ -4,9 +4,11 @@ body {
   height: 100%;
   padding: 0;
   margin: 0;
-  font-family: Roboto;
+  font-family: Arial, sans-serif;
   display: flex;
   flex-direction: column;
+  background: linear-gradient(to bottom, #fff4e6, rgb(242, 197, 184));
+  color: #fffffff9;
 }
 
 /* Main container takes full height and splits left and right sections */
@@ -26,21 +28,22 @@ main {
   padding: 20px;
   box-sizing: border-box;
   border-radius: 10px;
-  border: 1px solid #ccc;
-  background-color: #f9f9f9;
+  background: linear-gradient(to bottom right, #ff6f61, #ffa891);
+  color: white;
 }
 
 /* Right section takes the remaining width */
 #right-section {
+  background: linear-gradient(to bottom right, #ffa891, #ff6f61);
+
   margin-left: 17px;
   width: 65%;
   display: flex;
   flex-direction: column;
   height: 100%;
-  background-color: #f9f9f9;
+  background-color: #ffe0cc57;
   padding: 20px;
   border-radius: 10px;
-  border: 1px solid #ccc;
   box-sizing: border-box;
 }
 
@@ -48,18 +51,19 @@ main {
 #chat-container {
   display: flex;
   flex-direction: column;
-  flex-grow: 1; /* Allow the chat container to take up all available space */
+  flex-grow: 1;
 }
 
 /* Messages section takes all the space except the input form at the bottom */
 #messages {
+  color: #333;
   flex-grow: 1;
-  border: 1px solid #ccc;
+  border: 1px solid #ff998087;
   overflow-y: auto;
   padding: 10px;
   margin-bottom: 10px;
   border-radius: 10px;
-  background-color: white;
+  background-color: #ffe3d4;
 }
 
 /* Input area styling (chat form) is at the bottom of the chat section */
@@ -69,7 +73,7 @@ main {
 }
 
 #user-input {
-  flex-grow: 1; /* Input field takes all available space */
+  flex-grow: 1;
   padding: 10px;
   border: 1px solid #d1c7c7;
   border-radius: 5px;
@@ -79,15 +83,16 @@ main {
 
 #submit {
   padding: 10px 20px;
-  background-color: #007bff;
+  background-color: #ff6f61;
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 #submit:hover {
-  background-color: #0056b3;
+  background-color: #ff4d40;
 }
 
 .message {
@@ -108,17 +113,42 @@ main {
 
 /* Flashcard question area */
 #question-area {
-  background-color: #f4a261;
+  background: radial-gradient(circle, rgba(128, 149, 255, 1) 0%, rgba(255, 111, 97, 1) 100%);
   padding: 20px;
   border-radius: 8px;
   width: 80%;
   max-width: 600px;
-  margin: 20px auto;
   font-family: Arial, sans-serif;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  height: 100%;
+}
+
+#question-area p {
+  font-size: 1.5em;
+  font-weight: bold;
+  color: #ffffff;
+}
+
+/* Start Quiz Button */
+#start-quiz-button {
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 12px 20px;
+  font-size: 1.1em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 100px;
+  text-align: center;
+}
+
+#start-quiz-button:hover {
+  background-color: #ff6f61;
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.2);
 }
 
 #answers {
@@ -142,7 +172,7 @@ main {
 }
 
 .choice-button:hover {
-  background-color: #e76f51;
+  background-color: #ff6f61;
   color: #ffffff;
   transform: translateY(-2px);
   box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.2);
@@ -170,7 +200,7 @@ main {
 
 #next-question-button {
   background-color: #fefefe;
-  color: #e76f51;
+  color: #ff6f61;
   border: 2px solid #333;
   border-radius: 8px;
   padding: 12px 20px;
@@ -185,36 +215,32 @@ main {
 }
 
 #next-question-button:hover {
-  background-color: #e76f51;
+  background-color: #ff6f61;
   color: #fefefe;
-}
-
-/* Start Quiz Button */
-#start-quiz-button {
-  background-color: #ffffff;
-  border: 2px solid #333;
-  border-radius: 8px;
-  padding: 12px 20px;
-  font-size: 1.1em;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  min-width: 100px;
-  text-align: center;
-}
-
-#start-quiz-button:hover {
-  background-color: #e76f51;
-  color: #ffffff;
-  transform: translateY(-2px);
-  box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.2);
 }
 
 /* Settings area (Topics and other settings) */
 #settings-area {
-  background-color: #fff;
+  background-color: #ffe0cc57;
   padding: 20px;
   border-radius: 10px;
-  border: 1px solid #ccc;
   flex: 1;
   margin-left: 20px;
+  border: 1px solid #ff9980;
+  height: 100%;
+}
+
+label {
+  display: block;
+  margin-bottom: 10px;
+}
+
+a {
+  color: #f94f40;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #e65a50;
+  text-decoration: underline;
 }
