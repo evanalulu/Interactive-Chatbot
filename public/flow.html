@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Flow Page</title>
+    <title>ExaMigo</title>
     <link rel="stylesheet" href="flow.css" />
   </head>
   <body>
@@ -41,7 +41,20 @@
           <input type="checkbox" id="task" name="tasks" value="task" />
           <label for="task" class="accordion-button">Complete the Task</label>
           <div class="accordion-content">
-            <p>Complete the main task as instructed.</p>
+            <p>
+              You are a student enrolled in an undergraduate-level SPAN-101 course. Your final exams are approaching,
+              and you have just one hour to prepare as effectively as possible. The goal is to learn and retain as much
+              information as you can in this time. Use the resources available to maximize your understanding of key
+              topics like vocabulary, grammar, sentence structure, and conjugations. To help guide your study, you can
+              refer to the course syllabus provided here:
+              <a
+                href="https://drive.google.com/file/d/1AVpCp1R2BWINfN6Sm0jtoYeOB5PADRVC/view?usp=sharing"
+                target="_blank"
+              >
+                Course Syllabus </a
+              ><br /><br />
+              <a id="start-task" href="#" target="_blank">Go to task</a>
+            </p>
           </div>
         </div>
         <div class="accordion-item">
@@ -75,7 +88,6 @@
       // JavaScript to handle accordion behavior
       document.querySelectorAll(".accordion-item").forEach((item) => {
         item.addEventListener("click", (event) => {
-          // Prevent triggering when clicking directly on the checkbox
           if (event.target.tagName === "INPUT") {
             return;
           }
@@ -88,6 +100,23 @@
             content.style.maxHeight = content.scrollHeight + "px";
           }
         });
+      });
+
+      document.getElementById("start-task").addEventListener("click", function (event) {
+        event.preventDefault();
+
+        const participantID = localStorage.getItem("participantID");
+
+        if (!participantID) {
+          alert("Participant ID not found. Please go back and enter your ID.");
+          return;
+        }
+
+        if (parseInt(participantID.slice(-1)) % 2 === 0) {
+          window.open("chat.html", "_blank");
+        } else {
+          window.open("chat-basic.html", "_blank");
+        }
       });
     </script>
   </body>

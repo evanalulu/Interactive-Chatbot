@@ -69,7 +69,7 @@ app.post("/submit-basic", async (req, res) => {
 
 // Handle POST requests to /submit
 app.post("/submit", async (req, res) => {
-  const { history = [], input: userInput, participantID } = req.body; // Only use userInput and history from the request body
+  const { history = [], input: userInput, participantID, syllabus } = req.body;
 
   if (!participantID) {
     return res.status(400).send("Participant ID is required");
@@ -79,14 +79,22 @@ app.post("/submit", async (req, res) => {
     return res.status(400).json({ error: "Invalid input" });
   }
 
-  const prompt = `You are a supportive and knowledgeable language tutor, specializing in helping 
+  let prompt = `You are a supportive and knowledgeable language tutor, specializing in helping 
   high school and undergraduate students prepare for their Spanish exams. 
   Focus on explaining vocabulary, grammar, conjugations, sentence structure, and exam strategies 
   in a simple and clear way. 
   Adapt your responses to the student's level and try to make learning engaging and stress-free. 
-  Whenever user asks a question, avoid giving tips for studying
-  Encourage user to try the quiz on the right-hand-side of the page for reinforcing and retaining 
+  Whenever user asks a question, avoid giving tips for studying.
+  If user says "I've uploaded my syllabus", simply say great! We can practice based on your syllabus.
+  IMPORTANT TODO: Encourage user to try the quiz on the right-hand-side of the page for reinforcing and retaining 
   the information they just learned every 2-3 messages or so.`;
+
+  if (syllabus && syllabus.trim() !== "") {
+    console.log("Received Syllabus:", syllabus);
+    prompt += ` Here is the course syllabus to guide your responses: \n ${syllabus} \n Use this information to be more specific in helping the user.
+                IMPORTANT TODO: When you see syllabus, give a short recap of things user should focus on`;
+  }
+  console.log(prompt);
 
   try {
     // Construct the messages array based on whether conversation history exists or not
@@ -118,29 +126,14 @@ app.post("/submit", async (req, res) => {
     console.log(openaiResponse.choices[0].message.content.trim());
     console.log(botResponse);
 
-    // Perform the Bing search
-    // const bingResponse = await axios.get("https://api.bing.microsoft.com/v7.0/search", {
-    //   params: { q: userInput }, // Use the user's input as the search query
-    //   headers: {
-    //     "Ocp-Apim-Subscription-Key": process.env.BING_API_KEY,
-    //   },
-    // });
-
-    // const searchResults = bingResponse.data.webPages.value.slice(0, 3).map((result) => ({
-    //   title: result.name,
-    //   url: result.url,
-    //   snippet: result.snippet,
-    // }));
-    const searchResults = "";
-
     // Log the interaction to MongoDB after botResponse is generated
     const interaction = new Interaction({ userInput, botResponse, participantID });
     await interaction.save(); // Save the interaction to MongoDB
 
-    res.json({ botResponse, searchResults }); // Send a JSON success response
+    res.json({ botResponse }); // Send a JSON success response
   } catch (error) {
-    console.error("Error with OpenAI or Bing API:", error.message);
-    res.status(500).json({ error: "Server Error" }); // Send JSON error response for server issues
+    console.error("Error with OpenAI", error.message);
+    res.status(500).json({ error: "Server Error" });
   }
 });
 

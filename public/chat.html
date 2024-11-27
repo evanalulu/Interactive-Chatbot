@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Chatbot</title>
+    <title>ExaMigo</title>
     <link href="chat.css" rel="stylesheet" type="text/css" />
   </head>
   <body>
@@ -46,7 +46,9 @@
         <div id="syllabus-upload-container">
           <h4>
             <label for="syllabus-upload" class="syllabus-label">Upload Syllabus (PDF):</label>
-            <input type="file" id="syllabus-upload" accept="application/pdf" />
+            <input type="file" id="syllabus-upload" accept="application/pdf" style="display: none" />
+            <label for="syllabus-upload" id="custom-file-upload">Choose File</label>
+            <span id="file-chosen">No file chosen</span>
           </h4>
         </div>
 
@@ -84,8 +86,7 @@
               <option value="medium">Medium</option>
               <option value="hard">Hard</option>
             </select>
-
-            <button id="submit-settings" onclick="startQuizProcess()">Submit</button>
+            <button id="submit-settings" type="submit" onclick="startQuizProcess()">Submit</button>
           </div>
         </div>
       </div>
@@ -95,5 +96,6 @@
     <script src="quiz.js"></script>
     <script src="log.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.min.js"></script>
   </body>
 </html>

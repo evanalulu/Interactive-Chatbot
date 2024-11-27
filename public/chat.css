@@ -47,23 +47,26 @@ main {
   box-sizing: border-box;
 }
 
-/* Chat container inside left container to fill height and use space correctly */
+/* Chat container inside left container*/
 #chat-container {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
+  height: 100%;
 }
 
-/* Messages section takes all the space except the input form at the bottom */
+/* Messages section */
 #messages {
   color: #333;
-  flex-grow: 1;
   border: 1px solid #ff998087;
+  flex-grow: 1;
   overflow-y: auto;
   padding: 10px;
   margin-bottom: 10px;
   border-radius: 10px;
   background-color: #ffe3d4;
+  scroll-behavior: smooth;
+  max-height: calc(100% - 70px);
 }
 
 /* Input area styling (chat form) is at the bottom of the chat section */
@@ -114,25 +117,21 @@ main {
 /* Flashcard question area */
 #question-area {
   background: radial-gradient(circle, rgba(128, 149, 255, 1) 0%, rgba(255, 111, 97, 1) 100%);
-  padding: 20px;
+  padding: 30px;
   border-radius: 8px;
   width: 80%;
   max-width: 600px;
+  margin: 20px auto;
   font-family: Arial, sans-serif;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100%;
+  max-height: 500px;
+  overflow-y: auto;
+  box-sizing: border-box;
 }
 
-#question-area p {
-  font-size: 1.5em;
-  font-weight: bold;
-  color: #ffffff;
-}
-
-/* Start Quiz Button */
 #start-quiz-button {
   background-color: #ffffff;
   border-radius: 8px;
@@ -142,6 +141,7 @@ main {
   transition: all 0.3s ease;
   min-width: 100px;
   text-align: center;
+  margin: 0 auto;
 }
 
 #start-quiz-button:hover {
@@ -149,6 +149,12 @@ main {
   color: #ffffff;
   transform: translateY(-2px);
   box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.2);
+}
+
+#question-area p {
+  font-size: 1.5em;
+  font-weight: bold;
+  color: #ffffff;
 }
 
 #answers {
@@ -243,4 +249,65 @@ a {
 a:hover {
   color: #e65a50;
   text-decoration: underline;
+}
+
+button[type="submit"] {
+  padding: 10px 20px;
+  background-color: #ff6f61;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button[type="startQuizProcess"]:hover {
+  background-color: #e65a50;
+}
+
+select {
+  background-color: #ffe0cc;
+  color: #333;
+  padding: 10px;
+  border: 1px solid #ff6f61;
+  border-radius: 5px;
+  font-size: 1em;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+select:hover {
+  background-color: #ff9980;
+}
+
+.syllabus-label {
+  font-weight: bold;
+  color: #ffffff;
+  margin-bottom: 10px;
+}
+
+#syllabus-upload {
+  display: none; /* Hide the default input */
+}
+
+#custom-file-upload {
+  padding: 7px 15px;
+  background-color: #ff6f61;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  border: none;
+  display: inline-block;
+}
+
+#custom-file-upload:hover {
+  background-color: #ff4d40;
+}
+
+#file-chosen {
+  margin-left: 15px;
+  font-weight: bold;
+  color: #ffffff;
 }
