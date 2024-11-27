@@ -60,3 +60,15 @@ async function sendMessage(event) {
     console.error("Error:", error);
   }
 }
+
+// LOGGING
+document.getElementById("send-btn").addEventListener("click", () => {
+  logEvent("click", "Send Button");
+});
+document.getElementById("chat-container").addEventListener("mouseover", () => {
+  logEvent("hover", "User Input");
+});
+
+document.getElementById("chat-container").addEventListener("focus", () => {
+  logEvent("focus", "User Input");
+});

@@ -11,32 +11,31 @@
       <h2>Your Activity Progress</h2>
       <!-- Expandable List with Checkboxes -->
       <div class="accordion">
+        <!-- Complete the Demographics Survey -->
         <div class="accordion-item">
           <input type="checkbox" id="demographics" name="tasks" value="demographics" />
           <label for="demographics" class="accordion-button">Complete the Demographics Survey</label>
           <div class="accordion-content">
             <p>
               Complete the
-              <a href="https://usfca.qualtrics.com/jfe/form/SV_3VO4lZd4crBgKlU" target="_blank"
-                >Survey to provide information</a
-              >
+              <a id="demographics-questionnaire-link" href="" target="_blank">Go to Survey</a> to provide information
               about yourself.
             </p>
           </div>
         </div>
+        <!-- Complete the Pre-task Vocab Quiz -->
         <div class="accordion-item">
           <input type="checkbox" id="pre-task-quiz" name="tasks" value="pre-task-quiz" />
           <label for="pre-task-quiz" class="accordion-button">Complete the Pre-task Vocab Quiz</label>
           <div class="accordion-content">
             <p>
               Take the
-              <a href="https://usfca.qualtrics.com/jfe/form/SV_4TULuvVstVkStX8" target="_blank"
-                >Pre-task Vocab Quiz to test</a
-              >
-              your understanding before starting the main task.
+              <a id="pre-vocab-link" href="" target="_blank">Pre-task Vocab Quiz</a> to test your understanding before
+              starting the main task.
             </p>
           </div>
         </div>
+        <!-- Complete the Task -->
         <div class="accordion-item">
           <input type="checkbox" id="task" name="tasks" value="task" />
           <label for="task" class="accordion-button">Complete the Task</label>
@@ -50,34 +49,34 @@
               <a
                 href="https://drive.google.com/file/d/1AVpCp1R2BWINfN6Sm0jtoYeOB5PADRVC/view?usp=sharing"
                 target="_blank"
+                >Course Syllabus</a
               >
-                Course Syllabus </a
-              ><br /><br />
+              <br /><br />
               <a id="start-task" href="#" target="_blank">Go to task</a>
             </p>
           </div>
         </div>
+        <!-- Complete the Post-task Vocab Quiz -->
         <div class="accordion-item">
           <input type="checkbox" id="post-task-quiz" name="tasks" value="post-task-quiz" />
           <label for="post-task-quiz" class="accordion-button">Complete the Post-task Vocab Quiz</label>
           <div class="accordion-content">
             <p>
               Take the
-              <a href="https://usfca.qualtrics.com/jfe/form/SV_4VDMxprs5m2QqW2" target="_blank">Post-task Vocab Quiz</a>
-              to assess your understanding after completing the task.
+              <a id="post-task-vocab-link" href="" target="_blank">Post-task Vocab Quiz</a> to assess your understanding
+              after completing the task.
             </p>
           </div>
         </div>
+        <!-- Complete the Post-task Questionnaire -->
         <div class="accordion-item">
           <input type="checkbox" id="post-task-questionnaire" name="tasks" value="post-task-questionnaire" />
           <label for="post-task-questionnaire" class="accordion-button">Complete the Post-task Questionnaire</label>
           <div class="accordion-content">
             <p>
               Fill out the
-              <a href="https://usfca.qualtrics.com/jfe/form/SV_db8KANpgYELg8AK" target="_blank"
-                >Post-task Questionnaire</a
-              >
-              to provide your feedback on the task.
+              <a id="post-task-questionnaire-link" href="" target="_blank">Go to Survey</a> to provide your feedback on
+              the task.
             </p>
           </div>
         </div>
@@ -116,6 +115,33 @@
           window.open("chat.html", "_blank");
         } else {
           window.open("chat-basic.html", "_blank");
+        }
+      });
+
+      document.addEventListener("DOMContentLoaded", () => {
+        // Get the participant ID from localStorage
+        const participantID = localStorage.getItem("participantID");
+
+        if (participantID) {
+          const demographicsSurveyURL = `https://usfca.qualtrics.com/jfe/form/SV_3VO4lZd4crBgKlU?participantID=${encodeURIComponent(
+            participantID
+          )}`;
+          document.getElementById("demographics-questionnaire-link").href = demographicsSurveyURL;
+
+          const preVocabURL = `https://usfca.qualtrics.com/jfe/form/SV_4TULuvVstVkStX8?participantID=${encodeURIComponent(
+            participantID
+          )}`;
+          document.getElementById("pre-vocab-link").href = preVocabURL;
+
+          const postTaskVocabURL = `https://usfca.qualtrics.com/jfe/form/SV_4VDMxprs5m2QqW2?participantID=${encodeURIComponent(
+            participantID
+          )}`;
+          document.getElementById("post-task-vocab-link").href = postTaskVocabURL;
+
+          const postTaskQuestionnaireURL = `https://usfca.qualtrics.com/jfe/form/SV_db8KANpgYELg8AK?participantID=${encodeURIComponent(
+            participantID
+          )}`;
+          document.getElementById("post-task-questionnaire-link").href = postTaskQuestionnaireURL;
         }
       });
     </script>

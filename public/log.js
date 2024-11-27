@@ -1,19 +1,9 @@
 const participantID = localStorage.getItem("participantID");
 
-document.getElementById("submit").addEventListener("click", () => {
-  logEvent("click", "Send Button");
-});
-
-document.getElementById("chat-container").addEventListener("mouseover", () => {
-  logEvent("hover", "User Input");
-});
-
-document.getElementById("chat-container").addEventListener("focus", () => {
-  logEvent("focus", "User Input");
-});
-
 // Function to log events to the server
 function logEvent(type, element) {
+  console.log("participantID: ", participantID);
+
   fetch("/log-event", {
     method: "POST",
     headers: { "Content-Type": "application/json" },

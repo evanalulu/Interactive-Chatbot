@@ -187,3 +187,88 @@ function sendSyllabus(userMessage, syllabusText) {
       console.error("Error:", error);
     });
 }
+
+/* --------- LOGGING ----------- */
+document.addEventListener("DOMContentLoaded", () => {
+  const participantID = localStorage.getItem("participantID");
+
+  if (!participantID) {
+    console.error("Participant ID is not set in localStorage");
+    return;
+  }
+
+  console.log("Participant ID:", participantID);
+
+  // Logging send button click
+  document.getElementById("submit").addEventListener("click", () => {
+    logEvent("click", "Send Button");
+  });
+
+  // Logging when a user hovers over the chat container
+  document.getElementById("chat-container").addEventListener("mouseover", () => {
+    logEvent("hover", "Chat Container");
+  });
+
+  // Logging syllabus upload
+  document.getElementById("syllabus-upload").addEventListener("change", function () {
+    if (this.files && this.files[0]) {
+      logEvent("file-upload", "Syllabus Upload");
+    }
+  });
+
+  // Logging start quiz button click
+  document.getElementById("start-quiz-button").addEventListener("click", () => {
+    logEvent("click", "Start Quiz Button");
+  });
+
+  // Logging "Choose File" button click
+  document.getElementById("custom-file-upload").addEventListener("click", () => {
+    logEvent("click", "Choose File Button");
+  });
+
+  // Logging next question button click
+  document.getElementById("next-question-button").addEventListener("click", () => {
+    logEvent("click", "Next Question Button");
+  });
+
+  // Logging topic selection
+  document.querySelectorAll('input[name="topic"]').forEach((checkbox) => {
+    checkbox.addEventListener("change", () => {
+      logEvent("change", `Topic Checkbox - ${checkbox.value}`);
+    });
+  });
+
+  // Logging question type selection
+  document.querySelectorAll('input[name="question-type"]').forEach((checkbox) => {
+    checkbox.addEventListener("change", () => {
+      logEvent("change", `Question Type Checkbox - ${checkbox.value}`);
+    });
+  });
+
+  // Logging difficulty selection
+  document.getElementById("difficulty").addEventListener("change", () => {
+    logEvent("change", "Difficulty Selection");
+  });
+
+  // Logging quiz settings submission
+  document.getElementById("submit-settings").addEventListener("click", () => {
+    logEvent("click", "Submit Quiz Settings Button");
+  });
+
+  // Function to log events to the server
+  function logEvent(type, element) {
+    console.log(participantID, type, element); // Log to console for local debugging
+    fetch("/log-event", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        eventType: type,
+        elementName: element,
+        timestamp: new Date(),
+        participantID: participantID,
+      }),
+    }).catch((error) => {
+      console.error("Error logging event:", error);
+    });
+  }
+});
